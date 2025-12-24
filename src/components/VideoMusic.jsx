@@ -16,6 +16,8 @@ function VideoMusic() {
   const [searchSuggestions, setSearchSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [uploadForm, setUploadForm] = useState({});
+  const [isUploadProcessing, setIsUploadProcessing] = useState(false);
+  const [uploadStatusMessage, setUploadStatusMessage] = useState('');
   const [comments, setComments] = useState({});
   const [commentInputs, setCommentInputs] = useState({}); // Track comment input values
   const [replyInputs, setReplyInputs] = useState({}); // Track reply input values
@@ -34,6 +36,14 @@ function VideoMusic() {
   const userEmail = JSON.parse(localStorage.getItem('user'))?.email; // Get user email for tracking
   const user = JSON.parse(localStorage.getItem('user'));
   const userWithToken = { ...user, token };
+
+  useEffect(() => {
+    const processing = localStorage.getItem('uploadProcessing');
+    if (processing === 'true') {
+      setIsUploadProcessing(true);
+      setUploadStatusMessage('Processing your upload...');
+    }
+  }, []);
 
   const fetchMedia = async () => {
     const query = new URLSearchParams(filters);
@@ -349,19 +359,34 @@ function VideoMusic() {
 
   const handleUpload = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    Object.keys(uploadForm).forEach(key => {
-      if (uploadForm[key]) formData.append(key, uploadForm[key]);
-    });
-    const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/upload`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
-      body: formData
-    });
-    const data = await res.json();
-    alert(data.message);
-    setUploadForm({});
-    fetchMyMedia();
+    if (isUploadProcessing) return;
+
+    setIsUploadProcessing(true);
+    setUploadStatusMessage('Processing your upload...');
+    localStorage.setItem('uploadProcessing', 'true');
+
+    try {
+      const formData = new FormData();
+      Object.keys(uploadForm).forEach(key => {
+        if (uploadForm[key]) formData.append(key, uploadForm[key]);
+      });
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/upload`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData
+      });
+      const data = await res.json();
+      alert(data.message);
+      setUploadForm({});
+      fetchMyMedia();
+      setUploadStatusMessage('Upload completed successfully!');
+      localStorage.removeItem('uploadProcessing');
+    } catch (error) {
+      setUploadStatusMessage('Upload failed. Please try again.');
+      localStorage.removeItem('uploadProcessing');
+    } finally {
+      setIsUploadProcessing(false);
+    }
   };
 
   const toggleLike = async (id) => {
@@ -955,16 +980,20 @@ function VideoMusic() {
       {activeTab === 'upload' && (
         <div className="upload-section">
           <form onSubmit={handleUpload} className="upload-form">
-            <input type="file" accept="audio/*,video/*" onChange={(e) => setUploadForm({...uploadForm, file: e.target.files[0]})} required />
-            <input type="text" placeholder="Title" onChange={(e) => setUploadForm({...uploadForm, title: e.target.value})} required />
-            <textarea placeholder="Description" onChange={(e) => setUploadForm({...uploadForm, description: e.target.value})} />
-            <select onChange={(e) => setUploadForm({...uploadForm, media_type: e.target.value})} required>
+            <input type="file" accept="audio/*,video/*" onChange={(e) => setUploadForm({...uploadForm, file: e.target.files[0]})} required disabled={isUploadProcessing} />
+            <input type="text" placeholder="Title" onChange={(e) => setUploadForm({...uploadForm, title: e.target.value})} required disabled={isUploadProcessing} />
+            <textarea placeholder="Description" onChange={(e) => setUploadForm({...uploadForm, description: e.target.value})} disabled={isUploadProcessing} />
+            <select onChange={(e) => setUploadForm({...uploadForm, media_type: e.target.value})} required disabled={isUploadProcessing}>
               <option value="">Select Type</option>
               <option value="audio">Audio</option>
               <option value="video">Video</option>
             </select>
-            <input type="text" placeholder="Category" onChange={(e) => setUploadForm({...uploadForm, category: e.target.value})} />
-            <button type="submit">Upload</button>
+            <input type="text" placeholder="Category" onChange={(e) => setUploadForm({...uploadForm, category: e.target.value})} disabled={isUploadProcessing} />
+            <button type="submit" disabled={isUploadProcessing} aria-describedby="upload-status-message">
+              {isUploadProcessing ? 'Processing...' : 'Upload'}
+            </button>
+            {isUploadProcessing && <div className="spinner" aria-hidden="true"></div>}
+            <div id="upload-status-message" aria-live="polite" className="sr-only">{uploadStatusMessage}</div>
           </form>
         </div>
       )}
