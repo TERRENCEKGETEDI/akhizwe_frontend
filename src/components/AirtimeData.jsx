@@ -8,6 +8,7 @@ import SendData from './SendData';
 import RequestAdvance from './RequestAdvance';
 import TopUpWallet from './TopUpWallet';
 import TransactionHistory from './TransactionHistory';
+import PackagesTable from './PackagesTable';
 
 // Simple JWT decode function
 function decodeJWT(token) {
@@ -76,7 +77,7 @@ function AirtimeData() {
 
   const fetchNetworks = async () => {
     try {
-      const response = await fetch('/api/airtime-data/networks', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/airtime-data/networks`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       const data = await response.json();
@@ -88,7 +89,7 @@ function AirtimeData() {
 
   const fetchBundles = async (network) => {
     try {
-      const response = await fetch(`/api/airtime-data/bundles/${network}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/airtime-data/bundles/${network}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       const data = await response.json();
@@ -101,7 +102,7 @@ function AirtimeData() {
   const handleBuyAirtime = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/airtime-data/buy-airtime', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/airtime-data/buy-airtime`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -125,7 +126,7 @@ function AirtimeData() {
   const handleBuyData = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/airtime-data/buy-data', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/airtime-data/buy-data`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -153,7 +154,7 @@ function AirtimeData() {
   const handleSendAirtime = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/airtime-data/send-airtime', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/airtime-data/send-airtime`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -174,7 +175,7 @@ function AirtimeData() {
   const handleSendData = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/airtime-data/send-data', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/airtime-data/send-data`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -195,7 +196,7 @@ function AirtimeData() {
   const handleRequestAdvance = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/airtime-data/request-advance', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/airtime-data/request-advance`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -216,7 +217,7 @@ function AirtimeData() {
   const handleTopUp = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/airtime-data/top-up', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/airtime-data/top-up`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -236,7 +237,7 @@ function AirtimeData() {
 
   const fetchTransactions = async () => {
     try {
-      const response = await fetch('/api/airtime-data/transactions', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/airtime-data/transactions`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       const data = await response.json();
@@ -271,6 +272,7 @@ function AirtimeData() {
         </div>
         {message && <p>{message}</p>}
       <div className="tabs">
+        <button key="packages" className={activeTab === 'packages' ? 'active' : ''} onClick={() => setActiveTab('packages')}>Packages</button>
         <button key="buy-airtime" className={activeTab === 'buy-airtime' ? 'active' : ''} onClick={() => setActiveTab('buy-airtime')}>Airtime</button>
         <button key="buy-data" className={activeTab === 'buy-data' ? 'active' : ''} onClick={() => setActiveTab('buy-data')}>Data</button>
         <button key="send-airtime" className={activeTab === 'send-airtime' ? 'active' : ''} onClick={() => setActiveTab('send-airtime')}>Send Airtime</button>
@@ -279,6 +281,7 @@ function AirtimeData() {
         <button key="top-up" className={activeTab === 'top-up' ? 'active' : ''} onClick={() => setActiveTab('top-up')}>Top Up</button>
         <button key="history" className={activeTab === 'history' ? 'active' : ''} onClick={() => setActiveTab('history')}>History</button>
       </div>
+      {activeTab === 'packages' && <PackagesTable />}
       {activeTab === 'buy-airtime' && <BuyAirtime networks={networks} denominations={denominations} selectedNetwork={selectedNetwork} setSelectedNetwork={setSelectedNetwork} airtimeAmount={airtimeAmount} setAirtimeAmount={setAirtimeAmount} phone={phone} setPhone={setPhone} pin={pin} setPin={setPin} handleBuyAirtime={handleBuyAirtime} />}
       {activeTab === 'buy-data' && <BuyData networks={networks} bundles={bundles} selectedNetwork={selectedNetwork} setSelectedNetwork={setSelectedNetwork} dataBundle={dataBundle} setDataBundle={setDataBundle} phone={phone} setPhone={setPhone} pin={pin} setPin={setPin} handleBuyData={handleBuyData} fetchBundles={fetchBundles} dataQuantity={dataQuantity} setDataQuantity={setDataQuantity} loading={buyDataLoading} />}
       {activeTab === 'send-airtime' && <SendAirtime balance={airtimeBalance} phone={phone} setPhone={setPhone} airtimeAmount={airtimeAmount} setAirtimeAmount={setAirtimeAmount} pin={pin} setPin={setPin} handleSendAirtime={handleSendAirtime} />}
