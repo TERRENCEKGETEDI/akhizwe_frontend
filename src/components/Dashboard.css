@@ -1,0 +1,152 @@
+/* Professional Dashboard Styles */
+.container {
+  max-width: 1200px;
+  margin: 20px auto 10px auto;
+  padding: 30px 30px 20px 30px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #00b894;
+  font-size: 2.2em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+p {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #7f8c8d;
+  font-size: 1.1em;
+}
+
+/* Tabs Styling */
+.tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #ecf0f1;
+  background: #f8f9fa;
+  border-radius: 8px 8px 0 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.tabs button {
+  flex: none;
+  padding: 15px 10px;
+  border: none;
+  background: transparent;
+  color: #7f8c8d;
+  font-size: 0.9em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  width: fit-content;
+}
+
+.tabs button:hover {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.tabs button:first-child {
+  border-radius: 8px 0 0 0;
+}
+
+.tabs button:last-child {
+  border-radius: 0 8px 0 0;
+}
+
+/* Active tab styling */
+.tabs button.active {
+  background: linear-gradient(to bottom, #00b894 0%, #00a085 100%);
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 184, 148, 0.3);
+}
+
+/* Form Elements */
+select, input, button {
+  margin: 10px 0;
+  padding: 12px 15px;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+select:focus, input:focus {
+  outline: none;
+  border-color: #00b894;
+  box-shadow: 0 0 0 3px rgba(0, 184, 148, 0.1);
+}
+
+button {
+  background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 184, 148, 0.2);
+  width: fit-content;
+}
+
+button:hover {
+  background: linear-gradient(135deg, #00a085 0%, #009b73 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 184, 148, 0.3);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    margin: 10px;
+    padding: 20px;
+  }
+
+  .tabs {
+    flex-direction: column;
+  }
+
+  .tabs button {
+    border-radius: 0 !important;
+  }
+
+  h2 {
+    font-size: 1.8em;
+  }
+}
+
+/* Additional Professional Touches */
+.container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #00b894, #00a085, #009b73, #007f5f);
+  border-radius: 12px 12px 0 0;
+}
+
+.container {
+  position: relative;
+}

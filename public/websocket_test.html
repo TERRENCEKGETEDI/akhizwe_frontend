@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .notifications {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        .notification-item {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 5px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        button:disabled { background: #6c757d; cursor: not-allowed; }
+        input {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔔 Notification System Test</h1>
+    
+    <div class="test-container">
+        <h2>1. User Authentication</h2>
+        <div>
+            <input type="email" id="userEmail" placeholder="Email (e.g., user1@mail.com)" value="user1@mail.com">
+            <input type="password" id="userPassword" placeholder="Password" value="password">
+            <button onclick="login()">Login</button>
+        </div>
+        <div id="authStatus" class="status info">Enter your credentials and click Login</div>
+    </div>
+
+    <div class="test-container">
+        <h2>2. WebSocket Connection</h2>
+        <button onclick="connectWebSocket()" id="connectBtn" disabled>Connect WebSocket</button>
+        <button onclick="disconnectWebSocket()" id="disconnectBtn" disabled>Disconnect</button>
+        <div id="wsStatus" class="status info">Connect WebSocket after logging in</div>
+    </div>
+
+    <div class="test-container">
+        <h2>3. Notification Testing</h2>
+        <button onclick="requestNotifications()" id="requestBtn" disabled>Request Notifications</button>
+        <button onclick="markAllRead()" id="markReadBtn" disabled>Mark All Read</button>
+        <div id="notificationStatus" class="status info">Test notification functions</div>
+    </div>
+
+    <div class="test-container">
+        <h2>4. Live Notifications</h2>
+        <div id="notifications" class="notifications">
+            <div style="color: #666; text-align: center; padding: 20px;">
+                No notifications received yet
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+    <script>
+        let socket = null;
+        let authToken = null;
+
+        function log(message, type = 'info') {
+            console.log(message);
+            const statusDiv = document.getElementById('authStatus');
+            if (type === 'success') statusDiv.className = 'status success';
+            else if (type === 'error') statusDiv.className = 'status error';
+            else statusDiv.className = 'status info';
+            statusDiv.textContent = message;
+        }
+
+        function logWS(message, type = 'info') {
+            console.log('WebSocket:', message);
+            const statusDiv = document.getElementById('wsStatus');
+            if (type === 'success') statusDiv.className = 'status success';
+            else if (type === 'error') statusDiv.className = 'status error';
+            else statusDiv.className = 'status info';
+            statusDiv.textContent = message;
+        }
+
+        function logNotification(message, type = 'info') {
+            console.log('Notification:', message);
+            const statusDiv = document.getElementById('notificationStatus');
+            if (type === 'success') statusDiv.className = 'status success';
+            else if (type === 'error') statusDiv.className = 'status error';
+            else statusDiv.className = 'status info';
+            statusDiv.textContent = message;
+        }
+
+        function addNotificationToList(notification) {
+            const notificationsDiv = document.getElementById('notifications');
+            const emptyMsg = notificationsDiv.querySelector('div[style*="color: #666"]');
+            if (emptyMsg) emptyMsg.remove();
+
+            const notifDiv = document.createElement('div');
+            notifDiv.className = 'notification-item';
+            notifDiv.innerHTML = `
+                <strong>${notification.message || 'New notification'}</strong><br>
+                <small>ID: ${notification.notification_id || 'N/A'}</small><br>
+                <small>Type: ${notification.action_type || notification.notification_type || 'N/A'}</small><br>
+                <small>Time: ${new Date(notification.created_at || Date.now()).toLocaleString()}</small>
+            `;
+            notificationsDiv.insertBefore(notifDiv, notificationsDiv.firstChild);
+        }
+
+        async function login() {
+            const email = document.getElementById('userEmail').value;
+            const password = document.getElementById('userPassword').value;
+
+            try {
+                log('Logging in...', 'info');
+                const response = await fetch('http://localhost:5000/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        phone: email.includes('@') ? '0712345678' : email, // Convert email to phone format if needed
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    authToken = data.token;
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    log(`✅ Login successful! User: ${data.user.email}`, 'success');
+                    
+                    // Enable WebSocket connection
+                    document.getElementById('connectBtn').disabled = false;
+                } else {
+                    log(`❌ Login failed: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Login error: ${error.message}`, 'error');
+            }
+        }
+
+        function connectWebSocket() {
+            if (!authToken) {
+                logWS('❌ No auth token. Please login first.', 'error');
+                return;
+            }
+
+            try {
+                logWS('Connecting to WebSocket...', 'info');
+                
+                socket = io('http://localhost:5000', {
+                    auth: {
+                        token: authToken
+                    }
+                });
+
+                socket.on('connect', () => {
+                    logWS(`✅ WebSocket connected! Socket ID: ${socket.id}`, 'success');
+                    document.getElementById('disconnectBtn').disabled = false;
+                    document.getElementById('requestBtn').disabled = false;
+                    document.getElementById('markReadBtn').disabled = false;
+                    
+                    // Request initial data
+                    socket.emit('get_notifications');
+                    socket.emit('get_notification_preferences');
+                });
+
+                socket.on('connect_error', (error) => {
+                    logWS(`❌ WebSocket connection error: ${error.message}`, 'error');
+                });
+
+                socket.on('new_notification', (notification) => {
+                    logWS('📨 New notification received!', 'success');
+                    addNotificationToList(notification);
+                });
+
+                socket.on('notifications_list', (data) => {
+                    logNotification(`📋 Received ${data.notifications.length} notifications`, 'success');
+                    
+                    // Clear and repopulate notifications
+                    const notificationsDiv = document.getElementById('notifications');
+                    notificationsDiv.innerHTML = '';
+                    
+                    if (data.notifications.length === 0) {
+                        notificationsDiv.innerHTML = '<div style="color: #666; text-align: center; padding: 20px;">No notifications found</div>';
+                    } else {
+                        data.notifications.forEach(notification => {
+                            addNotificationToList(notification);
+                        });
+                    }
+                });
+
+                socket.on('unread_count', (data) => {
+                    logNotification(`🔢 Unread count: ${data.count}`, 'info');
+                });
+
+                socket.on('error', (error) => {
+                    logWS(`❌ Socket error: ${error.message}`, 'error');
+                });
+
+            } catch (error) {
+                logWS(`❌ WebSocket error: ${error.message}`, 'error');
+            }
+        }
+
+        function disconnectWebSocket() {
+            if (socket) {
+                socket.disconnect();
+                socket = null;
+                logWS('🔌 WebSocket disconnected', 'info');
+                
+                document.getElementById('disconnectBtn').disabled = true;
+                document.getElementById('requestBtn').disabled = true;
+                document.getElementById('markReadBtn').disabled = true;
+            }
+        }
+
+        function requestNotifications() {
+            if (socket && socket.connected) {
+                logNotification('📤 Requesting notifications...', 'info');
+                socket.emit('get_notifications');
+            } else {
+                logNotification('❌ WebSocket not connected', 'error');
+            }
+        }
+
+        function markAllRead() {
+            if (socket && socket.connected) {
+                logNotification('📤 Marking all as read...', 'info');
+                socket.emit('mark_all_read');
+            } else {
+                logNotification('❌ WebSocket not connected', 'error');
+            }
+        }
+
+        // Check if user is already logged in
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            
+            if (token && user) {
+                authToken = token;
+                const userData = JSON.parse(user);
+                log(`🔑 Found existing session for: ${userData.email}`, 'success');
+                document.getElementById('connectBtn').disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
