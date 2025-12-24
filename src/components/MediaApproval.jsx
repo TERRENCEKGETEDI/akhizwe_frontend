@@ -13,7 +13,7 @@ function MediaApproval() {
   const fetchPendingMedia = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/media/pending', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/pending`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -35,7 +35,7 @@ function MediaApproval() {
   const handleApprove = async (mediaId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/media/${mediaId}/approve`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${mediaId}/approve`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -58,7 +58,7 @@ function MediaApproval() {
   const handleReject = async (mediaId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/media/${mediaId}/reject`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${mediaId}/reject`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -107,12 +107,12 @@ function MediaApproval() {
               <div className="media-preview">
                 {media.media_type === 'video' ? (
                   <video controls className="media-player">
-                    <source src={`http://localhost:5000/${media.file_path}`} type="video/mp4" />
+                    <source src={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/${media.file_path}`} type="video/mp4" />
                     Your browser does not support the video tag.
                   </video>
                 ) : (
                   <audio controls className="media-player">
-                    <source src={`http://localhost:5000/${media.file_path}`} type="audio/mpeg" />
+                    <source src={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/${media.file_path}`} type="audio/mpeg" />
                     Your browser does not support the audio element.
                   </audio>
                 )}

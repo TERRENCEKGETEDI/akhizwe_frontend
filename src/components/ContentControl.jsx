@@ -25,7 +25,7 @@ function ContentControl() {
 
   const fetchTickets = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/admin/tickets', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/tickets`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -44,7 +44,7 @@ function ContentControl() {
     // For now, placeholder - might need to add endpoint if not exists
     try {
       // This might not exist yet, but assuming we can fetch pending media
-      const res = await fetch('http://localhost:5000/api/admin/media/pending', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/media/pending`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -61,7 +61,7 @@ function ContentControl() {
   const handleAddTicket = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5000/api/admin/tickets', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/tickets`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ function ContentControl() {
   const handleDeleteTicket = async (ticketId) => {
     if (!confirm('Are you sure you want to delete this ticket?')) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/tickets/${ticketId}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/tickets/${ticketId}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -109,7 +109,7 @@ function ContentControl() {
 
   const handleApproveRejectMedia = async (mediaId, isApproved) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/media/${mediaId}/approve`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/media/${mediaId}/approve`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

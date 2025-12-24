@@ -131,7 +131,7 @@ const Notifications = ({ user, onNotificationClick }) => {
   const deleteNotification = (notificationId) => {
     const token = localStorage.getItem('token');
     // API call to delete notification
-    fetch(`/api/notifications/${notificationId}`, {
+    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/notifications/${notificationId}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,

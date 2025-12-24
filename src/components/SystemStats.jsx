@@ -34,7 +34,7 @@ function SystemStats() {
 
       const results = await Promise.all(
         endpoints.map(async (endpoint) => {
-          const res = await fetch(`http://localhost:5000/api/admin/stats/${endpoint}?${query}`, {
+          const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/stats/${endpoint}?${query}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           return res.json();

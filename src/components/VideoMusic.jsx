@@ -37,43 +37,43 @@ function VideoMusic() {
 
   const fetchMedia = async () => {
     const query = new URLSearchParams(filters);
-    const res = await fetch(`http://localhost:5000/api/media?${query}`);
+    const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media?${query}`);
     const data = await res.json();
     setMedia(data.media || []);
   };
 
   const fetchMyMedia = async () => {
-    const res = await fetch('http://localhost:5000/api/media/my', { headers: { Authorization: `Bearer ${token}` } });
+    const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/my`, { headers: { Authorization: `Bearer ${token}` } });
     const data = await res.json();
     setMyMedia(data.media || []);
   };
 
   const fetchPending = async () => {
-    const res = await fetch('http://localhost:5000/api/media/pending', { headers: { Authorization: `Bearer ${token}` } });
+    const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/pending`, { headers: { Authorization: `Bearer ${token}` } });
     const data = await res.json();
     setPendingMedia(data.media || []);
   };
 
   const fetchReports = async () => {
-    const res = await fetch('http://localhost:5000/api/media/reports', { headers: { Authorization: `Bearer ${token}` } });
+    const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/reports`, { headers: { Authorization: `Bearer ${token}` } });
     const data = await res.json();
     setReports(data.reports || []);
   };
 
   const fetchNotifications = async () => {
-    const res = await fetch('http://localhost:5000/api/media/notifications', { headers: { Authorization: `Bearer ${token}` } });
+    const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/notifications`, { headers: { Authorization: `Bearer ${token}` } });
     const data = await res.json();
     setNotifications(data.notifications || []);
   };
 
   const fetchAnalytics = async () => {
-    const res = await fetch('http://localhost:5000/api/media/analytics', { headers: { Authorization: `Bearer ${token}` } });
+    const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/analytics`, { headers: { Authorization: `Bearer ${token}` } });
     const data = await res.json();
     setAnalytics(data);
   };
 
   const fetchComments = async (id) => {
-    const res = await fetch(`http://localhost:5000/api/media/${id}/comments`);
+    const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${id}/comments`);
     const data = await res.json();
     setComments(prev => ({...prev, [id]: data.comments || []}));
   };
@@ -87,7 +87,7 @@ function VideoMusic() {
     
     try {
       console.log('Fetching liked media for user:', userEmail);
-      const res = await fetch(`http://localhost:5000/api/media/liked`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/liked`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -134,7 +134,7 @@ function VideoMusic() {
     
     try {
       console.log('Fetching favorited media for user:', userEmail);
-      const res = await fetch(`http://localhost:5000/api/media/favorites`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/favorites`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -185,7 +185,7 @@ function VideoMusic() {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/api/media/search/suggestions?q=${encodeURIComponent(query)}&limit=8`);
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/search/suggestions?q=${encodeURIComponent(query)}&limit=8`);
       const data = await response.json();
       setSearchSuggestions(data.suggestions || []);
       setShowSuggestions(true);
@@ -353,7 +353,7 @@ function VideoMusic() {
     Object.keys(uploadForm).forEach(key => {
       if (uploadForm[key]) formData.append(key, uploadForm[key]);
     });
-    const res = await fetch('http://localhost:5000/api/media/upload', {
+    const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/upload`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
       body: formData
@@ -376,7 +376,7 @@ function VideoMusic() {
     try {
       if (isCurrentlyLiked) {
         // Unlike the media
-        const response = await fetch(`http://localhost:5000/api/media/${id}/like`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${id}/like`, {
           method: 'DELETE',
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -389,7 +389,7 @@ function VideoMusic() {
         console.log(`Unliked media ${id} successfully`);
       } else {
         // Like the media
-        const response = await fetch(`http://localhost:5000/api/media/${id}/like`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${id}/like`, {
           method: 'POST',
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -429,7 +429,7 @@ function VideoMusic() {
       if (isCurrentlyFavorited) {
         // Unfavorite the media
         console.log(`Unfavoriting media ${id}`);
-        const response = await fetch(`http://localhost:5000/api/media/${id}/favorite`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${id}/favorite`, {
           method: 'DELETE',
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -448,7 +448,7 @@ function VideoMusic() {
       } else {
         // Favorite the media
         console.log(`Favoriting media ${id}`);
-        const response = await fetch(`http://localhost:5000/api/media/${id}/favorite`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${id}/favorite`, {
           method: 'POST',
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -486,7 +486,7 @@ function VideoMusic() {
     }
     
     try {
-      const response = await fetch(`http://localhost:5000/api/media/${id}/comment`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${id}/comment`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ comment_text: text.trim() })
@@ -513,7 +513,7 @@ function VideoMusic() {
     }
     
     try {
-      const response = await fetch(`http://localhost:5000/api/media/${mediaId}/comment/${commentId}/reply`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${mediaId}/comment/${commentId}/reply`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ reply_text: text.trim() })
@@ -540,7 +540,7 @@ function VideoMusic() {
     }
     
     try {
-      const response = await fetch(`http://localhost:5000/api/media/comment/${commentId}/like`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/comment/${commentId}/like`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -562,17 +562,17 @@ function VideoMusic() {
   };
 
   const handleApprove = async (id) => {
-    await fetch(`http://localhost:5000/api/media/${id}/approve`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+    await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${id}/approve`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
     fetchPending();
   };
 
   const handleReject = async (id) => {
-    await fetch(`http://localhost:5000/api/media/${id}/reject`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+    await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${id}/reject`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
     fetchPending();
   };
 
   const handleReport = async (id, reason) => {
-    await fetch(`http://localhost:5000/api/media/${id}/report`, {
+    await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${id}/report`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify({ reason })
@@ -799,7 +799,7 @@ function VideoMusic() {
                 <video
                   ref={(el) => (videoRefs.current[index] = el)}
                   className="video-player"
-                  src={`http://localhost:5000/${m.file_path}`}
+                  src={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/${m.file_path}`}
                   loop
                   muted={volume === 0}
                   controls={false}
@@ -987,7 +987,7 @@ function VideoMusic() {
                 <span>Type: {m.media_type}</span>
                 <span>Uploaded: {m.created_at ? new Date(m.created_at).toLocaleDateString() : 'N/A'}</span>
               </div>
-              <button onClick={async () => { if (confirm('Are you sure you want to delete this media?')) { await fetch(`http://localhost:5000/api/media/${m.media_id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } }); fetchMyMedia(); } }}>Delete</button>
+              <button onClick={async () => { if (confirm('Are you sure you want to delete this media?')) { await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${m.media_id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } }); fetchMyMedia(); } }}>Delete</button>
             </div>
           ))}
         </div>
