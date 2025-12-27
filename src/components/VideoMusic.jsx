@@ -376,12 +376,17 @@ function VideoMusic() {
         body: formData
       });
       const data = await res.json();
-      alert(data.message);
+      if (!res.ok) {
+        throw new Error(data.error || 'Upload failed');
+      }
+      alert(data.message || 'Upload successful');
       setUploadForm({});
       fetchMyMedia();
       setUploadStatusMessage('Upload completed successfully!');
       localStorage.removeItem('uploadProcessing');
     } catch (error) {
+      console.error('Upload error:', error);
+      alert(error.message || 'Upload failed. Please try again.');
       setUploadStatusMessage('Upload failed. Please try again.');
       localStorage.removeItem('uploadProcessing');
     } finally {
@@ -821,25 +826,38 @@ function VideoMusic() {
               onTouchEnd={onTouchEnd}
             >
               <div className="media-container">
-                <video
-                  ref={(el) => (videoRefs.current[index] = el)}
-                  className="video-player"
-                  src={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/${m.file_path}`}
-                  loop
-                  muted={volume === 0}
-                  controls={false}
-                  onEnded={handleVideoEnd}
-                  onClick={togglePlayPause}
-                  preload="auto"
-                  onLoadStart={() => console.log(`Video ${m.media_id} load started`)}
-                  onCanPlay={() => console.log(`Video ${m.media_id} can play`)}
-                  onError={(e) => console.error(`Video ${m.media_id} load error:`, e)}
-                  onLoadedData={() => console.log(`Video ${m.media_id} loaded data`)}
-                  style={{
-                    opacity: index === currentVideoIndex ? 1 : 0,
-                    pointerEvents: index === currentVideoIndex ? 'auto' : 'none'
-                  }}
-                />
+                {m.media_type === 'image' ? (
+                  <img
+                    className="video-player"
+                    src={m.signed_url || `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/${m.file_path}`}
+                    alt={m.title}
+                    style={{
+                      opacity: index === currentVideoIndex ? 1 : 0,
+                      pointerEvents: index === currentVideoIndex ? 'auto' : 'none'
+                    }}
+                  />
+                ) : (
+                  <video
+                    ref={(el) => (videoRefs.current[index] = el)}
+                    className="video-player"
+                    loop
+                    muted={volume === 0}
+                    controls={false}
+                    onEnded={handleVideoEnd}
+                    onClick={togglePlayPause}
+                    preload="metadata"
+                    onLoadStart={() => console.log(`Video ${m.media_id} load started`)}
+                    onCanPlay={() => console.log(`Video ${m.media_id} can play`)}
+                    onError={(e) => console.error(`Video ${m.media_id} load error:`, e)}
+                    onLoadedData={() => console.log(`Video ${m.media_id} loaded data`)}
+                    style={{
+                      opacity: index === currentVideoIndex ? 1 : 0,
+                      pointerEvents: index === currentVideoIndex ? 'auto' : 'none'
+                    }}
+                  >
+                    <source src={m.signed_url || `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/${m.file_path}`} type="video/mp4" />
+                  </video>
+                )}
                 {/* Top Overlay */}
                 <div className="top-overlay">
                   <div className="user-info">
@@ -980,13 +998,14 @@ function VideoMusic() {
       {activeTab === 'upload' && (
         <div className="upload-section">
           <form onSubmit={handleUpload} className="upload-form">
-            <input type="file" accept="audio/*,video/*" onChange={(e) => setUploadForm({...uploadForm, file: e.target.files[0]})} required disabled={isUploadProcessing} />
+            <input type="file" accept="audio/*,video/*,image/*" onChange={(e) => setUploadForm({...uploadForm, file: e.target.files[0]})} required disabled={isUploadProcessing} />
             <input type="text" placeholder="Title" onChange={(e) => setUploadForm({...uploadForm, title: e.target.value})} required disabled={isUploadProcessing} />
             <textarea placeholder="Description" onChange={(e) => setUploadForm({...uploadForm, description: e.target.value})} disabled={isUploadProcessing} />
             <select onChange={(e) => setUploadForm({...uploadForm, media_type: e.target.value})} required disabled={isUploadProcessing}>
               <option value="">Select Type</option>
               <option value="audio">Audio</option>
               <option value="video">Video</option>
+              <option value="image">Image</option>
             </select>
             <input type="text" placeholder="Category" onChange={(e) => setUploadForm({...uploadForm, category: e.target.value})} disabled={isUploadProcessing} />
             <button type="submit" disabled={isUploadProcessing} aria-describedby="upload-status-message">

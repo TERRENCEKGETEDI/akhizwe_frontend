@@ -8,6 +8,7 @@ import Tickets from './components/Tickets';
 import Admin from './components/Admin';
 
 function App() {
+  console.log('App component rendering');
   return (
     <Router>
       <Routes>

@@ -5,6 +5,7 @@ import Logo from './Logo';
 import './Home.css';
 
 function Home() {
+  console.log('Home component rendering');
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user'));
 
