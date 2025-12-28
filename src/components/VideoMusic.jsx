@@ -29,6 +29,11 @@ function VideoMusic() {
   const [searchExpanded, setSearchExpanded] = useState(false);
   const [volume, setVolume] = useState(1);
   const [isPlaying, setIsPlaying] = useState(true);
+  const [showPlayButton, setShowPlayButton] = useState(false);
+  const [pauseButtonVisible, setPauseButtonVisible] = useState(false);
+  const [pauseButtonFading, setPauseButtonFading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const videoRefs = useRef([]);
   const feedRef = useRef(null);
   const token = localStorage.getItem('token');
@@ -83,9 +88,17 @@ function VideoMusic() {
   };
 
   const fetchComments = async (id) => {
-    const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${id}/comments`);
-    const data = await res.json();
-    setComments(prev => ({...prev, [id]: data.comments || []}));
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${id}/comments`);
+      if (!res.ok) {
+        throw new Error(`Failed to fetch comments: ${res.status}`);
+      }
+      const data = await res.json();
+      setComments(prev => ({...prev, [id]: data.comments || []}));
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+      setComments(prev => ({...prev, [id]: []}));
+    }
   };
 
   // Fetch user's liked media
@@ -273,7 +286,20 @@ function VideoMusic() {
   };
 
   const togglePlayPause = () => {
-    setIsPlaying(!isPlaying);
+    const newPlaying = !isPlaying;
+    setIsPlaying(newPlaying);
+    setShowPlayButton(!newPlaying);
+    if (newPlaying) {
+      setPauseButtonVisible(true);
+      setPauseButtonFading(false);
+      setTimeout(() => {
+        setPauseButtonFading(true);
+        setTimeout(() => setPauseButtonVisible(false), 300);
+      }, 2000);
+    } else {
+      setPauseButtonVisible(false);
+      setPauseButtonFading(false);
+    }
   };
 
   const toggleVolume = () => {
@@ -514,25 +540,28 @@ function VideoMusic() {
       alert('Please enter a comment');
       return;
     }
-    
+
+    setIsSubmittingComment(true);
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${id}/comment`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ comment_text: text.trim() })
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to post comment');
       }
-      
+
       // Clear the input and refresh comments
       setCommentInputs(prev => ({ ...prev, [id]: '' }));
       fetchComments(id);
     } catch (error) {
       console.error('Error posting comment:', error);
       alert(`Error: ${error.message}`);
+    } finally {
+      setIsSubmittingComment(false);
     }
   };
 
@@ -658,6 +687,13 @@ function VideoMusic() {
             e.preventDefault();
             toggleVolume();
             break;
+          case 'Escape':
+            e.preventDefault();
+            // Close comment section if open
+            if (media[currentVideoIndex]?.media_id && expandedComments[media[currentVideoIndex].media_id]) {
+              setExpandedComments(prev => ({ ...prev, [media[currentVideoIndex].media_id]: false }));
+            }
+            break;
           default:
             break;
         }
@@ -666,7 +702,41 @@ function VideoMusic() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeTab, searchExpanded, filtersOpen]);
+  }, [activeTab, searchExpanded, filtersOpen, expandedComments, currentVideoIndex, media]);
+
+  // Handle click outside comment section to close it
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      const commentSection = document.querySelector('.bottom-comment-section');
+      const commentButton = document.querySelector('.interaction-btn[title*="comments"]');
+      
+      if (commentSection && 
+          !commentSection.contains(event.target) && 
+          commentButton && 
+          !commentButton.contains(event.target) &&
+          media[currentVideoIndex]?.media_id && 
+          expandedComments[media[currentVideoIndex].media_id]) {
+        // Check if click is not on any interaction buttons
+        const interactionButtons = document.querySelectorAll('.interaction-btn');
+        let clickedOnInteraction = false;
+        
+        interactionButtons.forEach(btn => {
+          if (btn.contains(event.target)) {
+            clickedOnInteraction = true;
+          }
+        });
+        
+        if (!clickedOnInteraction) {
+          setExpandedComments(prev => ({ ...prev, [media[currentVideoIndex].media_id]: false }));
+        }
+      }
+    };
+
+    if (media[currentVideoIndex]?.media_id && expandedComments[media[currentVideoIndex].media_id]) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [expandedComments, currentVideoIndex, media]);
 
   return (
     <div className="video-music-container">
@@ -816,7 +886,8 @@ function VideoMusic() {
 
       {/* Main Content */}
       {activeTab === 'media' && (
-        <div className="video-feed" ref={feedRef}>
+        <>
+          <div className="video-feed" ref={feedRef}>
           {mediaWithFavoriteState.map((m, index) => (
             <div
               key={m.media_id}
@@ -836,7 +907,7 @@ function VideoMusic() {
                       pointerEvents: index === currentVideoIndex ? 'auto' : 'none'
                     }}
                   />
-                ) : (
+                ) : m.media_type === 'video' ? (
                   <video
                     ref={(el) => (videoRefs.current[index] = el)}
                     className="video-player"
@@ -846,10 +917,12 @@ function VideoMusic() {
                     onEnded={handleVideoEnd}
                     onClick={togglePlayPause}
                     preload="metadata"
-                    onLoadStart={() => console.log(`Video ${m.media_id} load started`)}
-                    onCanPlay={() => console.log(`Video ${m.media_id} can play`)}
-                    onError={(e) => console.error(`Video ${m.media_id} load error:`, e)}
-                    onLoadedData={() => console.log(`Video ${m.media_id} loaded data`)}
+                    onLoadStart={() => { console.log(`Video ${m.media_id} load started`); setIsLoading(true); }}
+                    onCanPlay={() => { console.log(`Video ${m.media_id} can play`); setIsLoading(false); }}
+                    onWaiting={() => setIsLoading(true)}
+                    onPlaying={() => setIsLoading(false)}
+                    onLoadedData={() => { console.log(`Video ${m.media_id} loaded data`); if (isPlaying) videoRefs.current[index]?.play(); }}
+                    onError={(e) => { console.error(`Video ${m.media_id} load error:`, e); setIsLoading(false); }}
                     style={{
                       opacity: index === currentVideoIndex ? 1 : 0,
                       pointerEvents: index === currentVideoIndex ? 'auto' : 'none'
@@ -857,7 +930,51 @@ function VideoMusic() {
                   >
                     <source src={m.signed_url || `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/${m.file_path}`} type="video/mp4" />
                   </video>
+                ) : m.media_type === 'audio' ? (
+                  <audio
+                    ref={(el) => (videoRefs.current[index] = el)}
+                    className="audio-player"
+                    controls
+                    loop
+                    muted={volume === 0}
+                    onEnded={handleVideoEnd}
+                    preload="metadata"
+                    onLoadStart={() => { setIsLoading(true); }}
+                    onCanPlay={() => { setIsLoading(false); }}
+                    onWaiting={() => setIsLoading(true)}
+                    onPlaying={() => setIsLoading(false)}
+                    onLoadedData={() => { if (isPlaying) el?.play(); }}
+                    onError={() => { setIsLoading(false); }}
+                    style={{
+                      opacity: index === currentVideoIndex ? 1 : 0,
+                      pointerEvents: index === currentVideoIndex ? 'auto' : 'none'
+                    }}
+                  >
+                    <source src={m.signed_url || `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/${m.file_path}`} type="audio/mpeg" />
+                  </audio>
+                ) : null}
+
+                {/* Play/Pause Overlays */}
+                {m.media_type === 'video' && showPlayButton && (
+                  <div className="play-button-overlay">
+                    <button className="play-button" onClick={togglePlayPause}>
+                      ▶️
+                    </button>
+                  </div>
                 )}
+                {m.media_type === 'video' && pauseButtonVisible && (
+                  <div className={`pause-button-overlay ${pauseButtonFading ? 'fade-out' : ''}`}>
+                    <div className="pause-button">
+                      ⏸️
+                    </div>
+                  </div>
+                )}
+                {m.media_type === 'video' && isLoading && (
+                  <div className="loading-overlay">
+                    <div className="loading-spinner"></div>
+                  </div>
+                )}
+
                 {/* Top Overlay */}
                 <div className="top-overlay">
                   <div className="user-info">
@@ -905,6 +1022,7 @@ function VideoMusic() {
                       }}
                       className={`interaction-btn ${expandedComments[m.media_id] ? 'active' : ''}`}
                       title="View comments (C)"
+                      disabled={index !== currentVideoIndex}
                     >
                       <div className="icon">💬</div>
                       <div className="comment-count">{m.comments}</div>
@@ -933,66 +1051,91 @@ function VideoMusic() {
                   </div>
                 </div>
 
-                {/* Comments Section */}
-                {expandedComments[m.media_id] && (
-                  <div className="comments-section">
-                    <div className="comments-list">
-                      {comments[m.media_id]?.map((comment) => (
-                        <div key={comment.comment_id} className="comment-item">
-                          <div className="comment-content">
-                            <strong>{comment.commenter_name}</strong>: {comment.comment_text}
-                            <div className="comment-actions">
-                              <button onClick={() => handleCommentLike(comment.comment_id)} className="like-btn">
-                                👍 {comment.likes}
-                              </button>
-                              <button onClick={() => setReplyInputs(prev => ({ ...prev, [comment.comment_id]: !prev[comment.comment_id] }))} >
-                                Reply
-                              </button>
-                            </div>
-                            {replyInputs[comment.comment_id] && (
-                              <div className="reply-input">
-                                <input
-                                  type="text"
-                                  placeholder="Write a reply..."
-                                  value={replyInputs[comment.comment_id] || ''}
-                                  onChange={(e) => setReplyInputs(prev => ({ ...prev, [comment.comment_id]: e.target.value }))}
-                                  onKeyPress={(e) => e.key === 'Enter' && handleReply(m.media_id, comment.comment_id, replyInputs[comment.comment_id])}
-                                />
-                                <button onClick={() => handleReply(m.media_id, comment.comment_id, replyInputs[comment.comment_id])}>Reply</button>
-                              </div>
-                            )}
-                          </div>
-                          {comment.replies && comment.replies.map((reply) => (
-                            <div key={reply.comment_id} className="reply-item">
-                              <div className="comment-content">
-                                <strong>{reply.commenter_name}</strong>: {reply.comment_text}
-                                <div className="comment-actions">
-                                  <button onClick={() => handleCommentLike(reply.comment_id)} className="like-btn">
-                                    👍 {reply.likes}
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      ))}
-                    </div>
-                    <div className="comment-input-section">
-                      <input
-                        type="text"
-                        placeholder="Write a comment..."
-                        value={commentInputs[m.media_id] || ''}
-                        onChange={(e) => setCommentInputs(prev => ({ ...prev, [m.media_id]: e.target.value }))}
-                        onKeyPress={(e) => e.key === 'Enter' && handleComment(m.media_id, commentInputs[m.media_id])}
-                      />
-                      <button onClick={() => handleComment(m.media_id, commentInputs[m.media_id])}>Comment</button>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           ))}
         </div>
+
+        {/* Bottom Comment Section */}
+        {expandedComments[media[currentVideoIndex]?.media_id] && (
+          <div className="bottom-comment-section">
+            <div className="comment-header">
+              <h3>Comments</h3>
+              <button
+                onClick={() => setExpandedComments(prev => ({ ...prev, [media[currentVideoIndex].media_id]: false }))}
+                className="comment-close-btn"
+                title="Close comments"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="comment-input-section">
+              <input
+                type="text"
+                placeholder="Write a comment..."
+                value={commentInputs[media[currentVideoIndex].media_id] || ''}
+                onChange={(e) => setCommentInputs(prev => ({ ...prev, [media[currentVideoIndex].media_id]: e.target.value }))}
+                onKeyPress={(e) => e.key === 'Enter' && handleComment(media[currentVideoIndex].media_id, commentInputs[media[currentVideoIndex].media_id])}
+                className="comment-input"
+              />
+              <button
+                onClick={() => handleComment(media[currentVideoIndex].media_id, commentInputs[media[currentVideoIndex].media_id])}
+                disabled={isSubmittingComment}
+                className="comment-submit-btn"
+              >
+                {isSubmittingComment ? 'Posting...' : 'Comment'}
+              </button>
+            </div>
+            <div className="comments-list">
+              {comments[media[currentVideoIndex].media_id]?.map((comment) => (
+                <div key={comment.comment_id} className="comment-item">
+                  <div className="comment-content">
+                    <div className="comment-header-row">
+                      <span className="comment-username">{comment.commenter_name}</span>
+                      {comment.created_at && <span className="comment-timestamp">{new Date(comment.created_at).toLocaleString()}</span>}
+                    </div>
+                    <div className="comment-text">{comment.comment_text}</div>
+                    <div className="comment-actions">
+                      <button onClick={() => handleCommentLike(comment.comment_id)} className="like-btn">
+                        👍 {comment.likes}
+                      </button>
+                      <button onClick={() => setReplyInputs(prev => ({ ...prev, [comment.comment_id]: !prev[comment.comment_id] }))} className="reply-btn">Reply</button>
+                    </div>
+                    {replyInputs[comment.comment_id] && (
+                      <div className="reply-input">
+                        <input
+                          type="text"
+                          placeholder="Write a reply..."
+                          value={replyInputs[comment.comment_id] || ''}
+                          onChange={(e) => setReplyInputs(prev => ({ ...prev, [comment.comment_id]: e.target.value }))}
+                          onKeyPress={(e) => e.key === 'Enter' && handleReply(media[currentVideoIndex].media_id, comment.comment_id, replyInputs[comment.comment_id])}
+                        />
+                        <button onClick={() => handleReply(media[currentVideoIndex].media_id, comment.comment_id, replyInputs[comment.comment_id])}>Reply</button>
+                      </div>
+                    )}
+                  </div>
+                  {comment.replies && comment.replies.map((reply) => (
+                    <div key={reply.comment_id} className="reply-item">
+                      <div className="comment-content">
+                        <div className="comment-header-row">
+                          <span className="comment-username">{reply.commenter_name}</span>
+                          {reply.created_at && <span className="comment-timestamp">{new Date(reply.created_at).toLocaleString()}</span>}
+                        </div>
+                        <div className="comment-text">{reply.comment_text}</div>
+                        <div className="comment-actions">
+                          <button onClick={() => handleCommentLike(reply.comment_id)} className="like-btn">
+                            👍 {reply.likes}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        </>
       )}
 
       {activeTab === 'upload' && (

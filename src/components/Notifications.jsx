@@ -6,10 +6,11 @@ const Notifications = ({ user, onNotificationClick }) => {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [showPreferences, setShowPreferences] = useState(false);
   const [preferences, setPreferences] = useState({});
   const [socket, setSocket] = useState(null);
+  const [error, setError] = useState(null);
 
   // WebSocket connection
   useEffect(() => {
@@ -94,6 +95,20 @@ const Notifications = ({ user, onNotificationClick }) => {
       };
 
       connectWebSocket();
+
+      // Fallback: fetch notifications via API
+      fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/notifications`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        setNotifications(data.notifications || []);
+        setIsLoading(false);
+      })
+      .catch(error => console.error('Error fetching notifications via API:', error));
 
       return () => {
         if (socket) {
