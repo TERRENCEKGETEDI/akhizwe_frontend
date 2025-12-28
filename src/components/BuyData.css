@@ -24,3 +24,304 @@
   white-space: nowrap;
   border: 0;
 }
+
+/* Package cards container with scroll for medium screens */
+.packages-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .packages-grid {
+    grid-template-columns: repeat(2, 1fr);
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: #fafafa;
+  }
+  
+  .packages-grid::after {
+    content: 'Scroll for more packages';
+    display: block;
+    text-align: center;
+    font-size: 12px;
+    color: #666;
+    margin-top: 10px;
+    font-style: italic;
+  }
+}
+
+@media (max-width: 767px) {
+  .packages-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 8px;
+  }
+}
+
+/* Package card styling */
+.package-card {
+  background: linear-gradient(145deg, #ffffff, #f8f9fa);
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.package-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  border-color: #007bff;
+  background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+}
+
+.package-card.selected {
+  background: linear-gradient(145deg, #007bff, #0056b3);
+  color: white;
+  border-color: #0056b3;
+  box-shadow: 0 6px 16px rgba(0, 123, 255, 0.3);
+}
+
+.package-card.selected:hover {
+  background: linear-gradient(145deg, #0056b3, #004085);
+  transform: translateY(-2px);
+}
+
+/* Package header with network logo */
+.package-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.package-network-logo {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  font-weight: bold;
+  font-size: 14px;
+  color: white;
+}
+
+.package-network-name {
+  font-weight: 600;
+  font-size: 16px;
+  margin: 0;
+}
+
+/* Package details */
+.package-details h4 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: inherit;
+}
+
+.package-size {
+  font-size: 24px;
+  font-weight: 800;
+  color: #28a745;
+  margin: 5px 0;
+}
+
+.package-card.selected .package-size {
+  color: #90ee90;
+}
+
+.package-duration {
+  font-size: 14px;
+  opacity: 0.8;
+  margin: 5px 0;
+}
+
+.package-price {
+  font-size: 20px;
+  font-weight: 700;
+  color: #007bff;
+  margin: 10px 0 5px 0;
+}
+
+.package-card.selected .package-price {
+  color: #ffffff;
+}
+
+/* Package features */
+.package-features {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+.package-features li {
+  font-size: 12px;
+  opacity: 0.8;
+  margin: 4px 0;
+  position: relative;
+  padding-left: 15px;
+}
+
+.package-features li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: #28a745;
+  font-weight: bold;
+}
+
+.package-card.selected .package-features li::before {
+  color: #90ee90;
+}
+
+/* Small screen optimizations */
+@media (max-width: 767px) {
+  .package-card {
+    padding: 16px;
+    min-height: 160px;
+  }
+  
+  .package-network-logo {
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+  }
+  
+  .package-network-name {
+    font-size: 14px;
+  }
+  
+  .package-details h4 {
+    font-size: 16px;
+  }
+  
+  .package-size {
+    font-size: 20px;
+  }
+  
+  .package-price {
+    font-size: 18px;
+  }
+}
+
+/* Loading and error states */
+.loading-packages {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  color: #666;
+  font-style: italic;
+}
+
+.error-packages {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  color: #dc3545;
+  font-weight: 500;
+}
+
+/* Visibility indicators */
+.visibility-indicator {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #007bff;
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.package-card:hover .visibility-indicator {
+  opacity: 1;
+}
+
+.package-card.selected .visibility-indicator {
+  background: rgba(255, 255, 255, 0.95);
+  color: #0056b3;
+}
+
+/* Action buttons */
+.package-actions {
+  margin-top: 15px;
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: #007bff;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #0056b3;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #545b62;
+  transform: translateY(-1px);
+}
+
+/* Data usage indicators */
+.data-usage-bar {
+  width: 100%;
+  height: 6px;
+  background: #e9ecef;
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 10px 0;
+}
+
+.data-usage-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #28a745, #20c997);
+  transition: width 0.3s ease;
+  border-radius: 3px;
+}
+
+/* Network-specific colors */
+.network-mtn { background: linear-gradient(135deg, #ffcc00, #ff9900); }
+.network-vodacom { background: linear-gradient(135deg, #e60000, #cc0000); }
+.network-cellc { background: linear-gradient(135deg, #00a651, #008542); }
+.network-telkom { background: linear-gradient(135deg, #ff6600, #e55a00); }

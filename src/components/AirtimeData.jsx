@@ -51,20 +51,14 @@ function AirtimeData() {
   const [dataAmount, setDataAmount] = useState('');
   const [buyDataLoading, setBuyDataLoading] = useState(false);
   const [sendDataLoading, setSendDataLoading] = useState(false);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+  const [packagesCanScrollLeft, setPackagesCanScrollLeft] = useState(false);
+  const [packagesCanScrollRight, setPackagesCanScrollRight] = useState(false);
 
   useEffect(() => {
     fetchNetworks();
-    // Decode user info from token
-    const token = localStorage.getItem('token');
-    if (token) {
-      const decoded = decodeJWT(token);
-      if (decoded) {
-        setBalance(parseFloat(decoded.wallet_balance || 0));
-        setAirtimeBalance(parseFloat(decoded.airtime_balance || 0));
-        setDataBalance(parseFloat(decoded.data_balance || 0));
-        setUserPhone(decoded.phone || '');
-      }
-    }
+    fetchUserBalance();
   }, []);
 
   useEffect(() => {
@@ -99,6 +93,61 @@ function AirtimeData() {
     }
   };
 
+  const fetchUserBalance = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/airtime-data/balance`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setBalance(data.wallet_balance || 0);
+        setAirtimeBalance(data.airtime_balance || 0);
+        setDataBalance(data.data_balance || 0);
+        setUserPhone(data.phone || '');
+      } else {
+        console.error('Failed to fetch balance:', data.error);
+      }
+    } catch (error) {
+      console.error('Fetch balance error:', error);
+    }
+  };
+
+  // Scroll functionality for tabs
+  const checkScrollPosition = () => {
+    const tabsContainer = document.querySelector('.tabs');
+    if (tabsContainer) {
+      setCanScrollLeft(tabsContainer.scrollLeft > 0);
+      setCanScrollRight(
+        tabsContainer.scrollLeft < tabsContainer.scrollWidth - tabsContainer.clientWidth
+      );
+    }
+  };
+
+  const scrollTabs = (direction) => {
+    const tabsContainer = document.querySelector('.tabs');
+    if (tabsContainer) {
+      const scrollAmount = 200;
+      const newScrollLeft = direction === 'left' 
+        ? tabsContainer.scrollLeft - scrollAmount
+        : tabsContainer.scrollLeft + scrollAmount;
+      
+      tabsContainer.scrollTo({
+        left: newScrollLeft,
+        behavior: 'smooth'
+      });
+      
+      // Update scroll indicators after animation
+      setTimeout(checkScrollPosition, 300);
+    }
+  };
+
+  useEffect(() => {
+    checkScrollPosition();
+    const handleResize = () => checkScrollPosition();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [activeTab]);
+
   const handleBuyAirtime = async (e) => {
     e.preventDefault();
     try {
@@ -112,10 +161,8 @@ function AirtimeData() {
       });
       const data = await response.json();
       if (data.message) {
-        setBalance(balance - parseFloat(airtimeAmount));
-        if (phone === userPhone) {
-          setAirtimeBalance(airtimeBalance + parseFloat(airtimeAmount));
-        }
+        // Refresh balance from database
+        await fetchUserBalance();
       }
       setMessage(data.message || data.error);
     } catch (error) {
@@ -136,14 +183,8 @@ function AirtimeData() {
       });
       const data = await response.json();
       if (data.message) {
-        const selectedBundle = bundles.find(b => b.bundle_id == dataBundle);
-        if (selectedBundle) {
-          setBalance(balance - parseFloat(selectedBundle.price));
-          if (phone === userPhone) {
-            const dataMB = selectedBundle.data_size === '1GB' ? 1024 : selectedBundle.data_size === '5GB' ? 5120 : 0; // Simple conversion
-            setDataBalance(dataBalance + dataMB);
-          }
-        }
+        // Refresh balance from database
+        await fetchUserBalance();
       }
       setMessage(data.message || data.error);
     } catch (error) {
@@ -164,7 +205,8 @@ function AirtimeData() {
       });
       const data = await response.json();
       if (data.message) {
-        setAirtimeBalance(airtimeBalance - parseFloat(airtimeAmount));
+        // Refresh balance from database
+        await fetchUserBalance();
       }
       setMessage(data.message || data.error);
     } catch (error) {
@@ -185,7 +227,8 @@ function AirtimeData() {
       });
       const data = await response.json();
       if (data.message) {
-        setDataBalance(dataBalance - parseFloat(dataAmount));
+        // Refresh balance from database
+        await fetchUserBalance();
       }
       setMessage(data.message || data.error);
     } catch (error) {
@@ -206,7 +249,8 @@ function AirtimeData() {
       });
       const data = await response.json();
       if (data.message) {
-        setBalance(balance + parseFloat(advanceAmount));
+        // Refresh balance from database
+        await fetchUserBalance();
       }
       setMessage(data.message || data.error);
     } catch (error) {
@@ -227,7 +271,8 @@ function AirtimeData() {
       });
       const data = await response.json();
       if (data.message && data.added_amount) {
-        setBalance(balance + parseFloat(data.added_amount));
+        // Refresh balance from database
+        await fetchUserBalance();
       }
       setMessage(data.message || data.error);
     } catch (error) {
@@ -271,15 +316,79 @@ function AirtimeData() {
           </div>
         </div>
         {message && <p>{message}</p>}
-      <div className="tabs">
-        <button key="packages" className={activeTab === 'packages' ? 'active' : ''} onClick={() => setActiveTab('packages')}>Packages</button>
-        <button key="buy-airtime" className={activeTab === 'buy-airtime' ? 'active' : ''} onClick={() => setActiveTab('buy-airtime')}>Airtime</button>
-        <button key="buy-data" className={activeTab === 'buy-data' ? 'active' : ''} onClick={() => setActiveTab('buy-data')}>Data</button>
-        <button key="send-airtime" className={activeTab === 'send-airtime' ? 'active' : ''} onClick={() => setActiveTab('send-airtime')}>Send Airtime</button>
-        <button key="send-data" className={activeTab === 'send-data' ? 'active' : ''} onClick={() => setActiveTab('send-data')}>Send Data</button>
-        <button key="advance" className={activeTab === 'advance' ? 'active' : ''} onClick={() => setActiveTab('advance')}>Advance</button>
-        <button key="top-up" className={activeTab === 'top-up' ? 'active' : ''} onClick={() => setActiveTab('top-up')}>Top Up</button>
-        <button key="history" className={activeTab === 'history' ? 'active' : ''} onClick={() => setActiveTab('history')}>History</button>
+      <div className="tabs-container">
+        {canScrollLeft && (
+          <div className="scroll-indicator scroll-indicator-left">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+            </svg>
+          </div>
+        )}
+        <div className="tabs" onScroll={checkScrollPosition}>
+          <button 
+            key="packages" 
+            className={activeTab === 'packages' ? 'active' : ''} 
+            onClick={() => setActiveTab('packages')}
+          >
+            Packages
+          </button>
+        <button 
+          key="buy-airtime" 
+          className={activeTab === 'buy-airtime' ? 'active' : ''} 
+          onClick={() => setActiveTab('buy-airtime')}
+        >
+          Airtime
+        </button>
+        <button 
+          key="buy-data" 
+          className={activeTab === 'buy-data' ? 'active' : ''} 
+          onClick={() => setActiveTab('buy-data')}
+        >
+          Data
+        </button>
+        <button 
+          key="send-airtime" 
+          className={activeTab === 'send-airtime' ? 'active' : ''} 
+          onClick={() => setActiveTab('send-airtime')}
+        >
+          Send Airtime
+        </button>
+        <button 
+          key="send-data" 
+          className={activeTab === 'send-data' ? 'active' : ''} 
+          onClick={() => setActiveTab('send-data')}
+        >
+          Send Data
+        </button>
+        <button 
+          key="advance" 
+          className={activeTab === 'advance' ? 'active' : ''} 
+          onClick={() => setActiveTab('advance')}
+        >
+          Advance
+        </button>
+        <button 
+          key="top-up" 
+          className={activeTab === 'top-up' ? 'active' : ''} 
+          onClick={() => setActiveTab('top-up')}
+        >
+          Top Up
+        </button>
+          <button 
+            key="history" 
+            className={activeTab === 'history' ? 'active' : ''} 
+            onClick={() => setActiveTab('history')}
+          >
+            History
+          </button>
+        </div>
+        {canScrollRight && (
+          <div className="scroll-indicator scroll-indicator-right">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
+            </svg>
+          </div>
+        )}
       </div>
       {activeTab === 'packages' && <PackagesTable />}
       {activeTab === 'buy-airtime' && <BuyAirtime networks={networks} denominations={denominations} selectedNetwork={selectedNetwork} setSelectedNetwork={setSelectedNetwork} airtimeAmount={airtimeAmount} setAirtimeAmount={setAirtimeAmount} phone={phone} setPhone={setPhone} pin={pin} setPin={setPin} handleBuyAirtime={handleBuyAirtime} />}

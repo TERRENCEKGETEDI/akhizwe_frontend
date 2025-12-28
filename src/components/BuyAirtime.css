@@ -24,3 +24,162 @@
   white-space: nowrap;
   border: 0;
 }
+
+/* Network buttons container with scroll for medium screens */
+.networks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .networks-grid {
+    grid-template-columns: repeat(3, 1fr);
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: #fafafa;
+  }
+  
+  .networks-grid::after {
+    content: 'Scroll for more';
+    display: block;
+    text-align: center;
+    font-size: 12px;
+    color: #666;
+    margin-top: 10px;
+    font-style: italic;
+  }
+}
+
+@media (max-width: 767px) {
+  .networks-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 8px;
+  }
+}
+
+/* Network button styling */
+.network-btn {
+  background: linear-gradient(145deg, #ffffff, #f0f0f0);
+  border: 2px solid #ddd;
+  border-radius: 12px;
+  padding: 20px 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100px;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.network-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  border-color: #007bff;
+  background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+}
+
+.network-btn.selected {
+  background: linear-gradient(145deg, #007bff, #0056b3);
+  color: white;
+  border-color: #0056b3;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.network-btn.selected:hover {
+  background: linear-gradient(145deg, #0056b3, #004085);
+  transform: translateY(-1px);
+}
+
+.network-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  font-weight: bold;
+  font-size: 16px;
+  color: white;
+}
+
+.network-name {
+  font-weight: 600;
+  font-size: 14px;
+  text-align: center;
+  margin: 0;
+}
+
+/* Small screen optimizations */
+@media (max-width: 767px) {
+  .network-btn {
+    padding: 15px 10px;
+    min-height: 80px;
+  }
+  
+  .network-logo {
+    width: 35px;
+    height: 35px;
+    font-size: 14px;
+  }
+  
+  .network-name {
+    font-size: 12px;
+  }
+}
+
+/* Loading and error states */
+.loading-networks {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  color: #666;
+  font-style: italic;
+}
+
+.error-networks {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  color: #dc3545;
+  font-weight: 500;
+}
+
+/* Visibility indicators */
+.visibility-indicator {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 20px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #007bff;
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.network-btn:hover .visibility-indicator {
+  opacity: 1;
+}
+
+.network-btn.selected .visibility-indicator {
+  background: rgba(255, 255, 255, 0.9);
+  color: #fff;
+}
