@@ -9,6 +9,7 @@ import RequestAdvance from './RequestAdvance';
 import TopUpWallet from './TopUpWallet';
 import TransactionHistory from './TransactionHistory';
 import PackagesTable from './PackagesTable';
+import { formatDataBalance } from '../utils/format';
 
 // Simple JWT decode function
 function decodeJWT(token) {
@@ -312,7 +313,7 @@ function AirtimeData() {
             <strong>Airtime Balance: R{airtimeBalance.toFixed(2)}</strong>
           </div>
           <div className="balance-item">
-            <strong>Data Balance: {dataBalance.toFixed(0)} MB</strong>
+            <strong>Data Balance: {formatDataBalance(dataBalance)}</strong>
           </div>
         </div>
         {message && <p>{message}</p>}

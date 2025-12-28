@@ -24,3 +24,80 @@
   white-space: nowrap;
   border: 0;
 }
+
+/* Advance Button Styles */
+.advance-button {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  border: 1px solid rgba(40, 167, 69, 0.3);
+  border-radius: 6px;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
+  flex: 1;
+  flex-shrink: 1;
+  max-width: fit-content;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.advance-button:hover {
+  background: linear-gradient(135deg, #20c997 0%, #1e7e34 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+  border-color: rgba(40, 167, 69, 0.5);
+}
+
+.advance-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
+}
+
+.advance-button:disabled {
+  background: #bdc3c7;
+  border-color: #bdc3c7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Mobile responsive styles for Advance button */
+@media (max-width: 480px) {
+  .advance-button {
+    padding: 8px 12px;
+    font-size: 14px;
+    min-height: 36px;
+    border-radius: 4px;
+    border: 1px solid rgba(40, 167, 69, 0.3);
+    box-shadow: 0 1px 3px rgba(40, 167, 69, 0.2);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    flex: 1;
+    flex-shrink: 1;
+    max-width: fit-content;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .advance-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
+    background: linear-gradient(135deg, #20c997 0%, #1e7e34 100%);
+    border-color: rgba(40, 167, 69, 0.5);
+  }
+  
+  .advance-button:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 3px rgba(40, 167, 69, 0.2);
+  }
+}

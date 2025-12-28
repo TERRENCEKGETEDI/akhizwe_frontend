@@ -187,33 +187,80 @@
   color: #90ee90;
 }
 
-/* Small screen optimizations */
+/* Enhanced small screen optimizations */
 @media (max-width: 767px) {
   .package-card {
-    padding: 16px;
-    min-height: 160px;
+    padding: 12px;
+    min-height: 140px;
+    border: 1px solid rgba(233, 236, 239, 0.8);
   }
   
   .package-network-logo {
-    width: 30px;
-    height: 30px;
-    font-size: 12px;
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
   }
   
   .package-network-name {
-    font-size: 14px;
+    font-size: 13px;
   }
   
   .package-details h4 {
-    font-size: 16px;
+    font-size: 14px;
   }
   
   .package-size {
-    font-size: 20px;
+    font-size: 18px;
   }
   
   .package-price {
-    font-size: 18px;
+    font-size: 16px;
+  }
+}
+
+/* Extra small screens - phones */
+@media (max-width: 480px) {
+  .packages-grid {
+    gap: 8px;
+    padding: 4px;
+  }
+  
+  .package-card {
+    padding: 10px;
+    min-height: 120px;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  }
+  
+  .package-network-logo {
+    width: 24px;
+    height: 24px;
+    font-size: 10px;
+  }
+  
+  .package-network-name {
+    font-size: 12px;
+  }
+  
+  .package-details h4 {
+    font-size: 13px;
+  }
+  
+  .package-size {
+    font-size: 16px;
+  }
+  
+  .package-price {
+    font-size: 14px;
+  }
+  
+  .package-features li {
+    font-size: 11px;
+  }
+  
+  .package-actions {
+    margin-top: 10px;
+    gap: 6px;
   }
 }
 
@@ -265,42 +312,92 @@
   color: #0056b3;
 }
 
-/* Action buttons */
+/* Enhanced Action buttons */
 .package-actions {
   margin-top: 15px;
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .action-btn {
   flex: 1;
-  padding: 8px 12px;
-  border: none;
+  padding: 10px 14px;
+  border: 1px solid transparent;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  min-height: 38px;
+  flex-shrink: 1;
+  max-width: fit-content;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .btn-primary {
-  background: #007bff;
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
   color: white;
+  border-color: rgba(0, 123, 255, 0.3);
+  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
 }
 
 .btn-primary:hover {
-  background: #0056b3;
+  background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
   transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+  border-color: rgba(0, 123, 255, 0.5);
 }
 
 .btn-secondary {
-  background: #6c757d;
+  background: linear-gradient(135deg, #6c757d 0%, #545b62 100%);
   color: white;
+  border-color: rgba(108, 117, 125, 0.3);
+  box-shadow: 0 2px 4px rgba(108, 117, 125, 0.2);
 }
 
 .btn-secondary:hover {
-  background: #545b62;
+  background: linear-gradient(135deg, #545b62 0%, #3d4142 100%);
   transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
+  border-color: rgba(108, 117, 125, 0.5);
+}
+
+/* Mobile responsive styles for action buttons */
+@media (max-width: 480px) {
+  .package-actions {
+    margin-top: 10px;
+    gap: 6px;
+    flex-direction: column;
+  }
+  
+  .action-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+    min-height: 36px;
+    border-radius: 4px;
+    flex: 1;
+    flex-shrink: 1;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .btn-primary,
+  .btn-secondary {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .btn-primary:hover,
+  .btn-secondary:hover {
+    transform: translateY(-1px);
+  }
 }
 
 /* Data usage indicators */

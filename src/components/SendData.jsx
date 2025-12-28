@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './SendData.css';
+import { formatDataBalance } from '../utils/format';
 
 function SendData({ phone, setPhone, pin, setPin, handleSendData, dataBalance, dataAmount, setDataAmount }) {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -35,7 +36,7 @@ function SendData({ phone, setPhone, pin, setPin, handleSendData, dataBalance, d
 
   return (
     <div>
-      <p>Available Data: {((dataBalance || 0) > 1024 ? ((dataBalance || 0) / 1024).toFixed(2) + ' GB' : (dataBalance || 0).toFixed(2) + ' MB')}</p>
+      <p>Available Data: {formatDataBalance(dataBalance || 0)}</p>
       <form onSubmit={handleSubmit}>
         <input type="number" placeholder="Data Amount (MB)" value={dataAmount} onChange={(e) => setDataAmount(e.target.value)} required min="0" step="0.01" disabled={isProcessing} />
         <input type="text" placeholder="Recipient Phone" value={phone} onChange={(e) => setPhone(e.target.value)} required disabled={isProcessing} />

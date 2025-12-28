@@ -119,21 +119,58 @@
   margin: 0;
 }
 
-/* Small screen optimizations */
+/* Enhanced small screen optimizations */
 @media (max-width: 767px) {
   .network-btn {
-    padding: 15px 10px;
-    min-height: 80px;
+    padding: 10px 8px;
+    min-height: 60px;
+    border: 1px solid rgba(221, 221, 221, 0.8);
+    flex: 1;
+    flex-shrink: 1;
+    max-width: fit-content;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   
   .network-logo {
-    width: 35px;
-    height: 35px;
-    font-size: 14px;
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+    margin-bottom: 6px;
   }
   
   .network-name {
-    font-size: 12px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+}
+
+/* Extra small screens - phones */
+@media (max-width: 480px) {
+  .networks-grid {
+    gap: 6px;
+    padding: 6px;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+  
+  .network-btn {
+    padding: 8px 6px;
+    min-height: 50px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .network-logo {
+    width: 24px;
+    height: 24px;
+    font-size: 10px;
+    margin-bottom: 4px;
+  }
+  
+  .network-name {
+    font-size: 10px;
+    line-height: 1.2;
   }
 }
 
