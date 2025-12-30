@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORS Test - Browser Login</title>
+</head>
+<body>
+    <h1>Browser CORS Test</h1>
+    <div id="result"></div>
+    
+    <script>
+        async function testCORSLogin() {
+            const resultDiv = document.getElementById('result');
+            
+            try {
+                console.log('🌐 Testing CORS from browser...');
+                console.log('📍 Current origin:', window.location.origin);
+                
+                // This is exactly what the frontend does
+                const response = await fetch('https://akhizwe-backend.onrender.com/api/login', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Origin': window.location.origin  // This will be http://localhost:5173
+                    },
+                    body: JSON.stringify({
+                        phone: '0711111111',
+                        password: 'password'
+                    }),
+                });
+                
+                console.log('📊 Response status:', response.status);
+                console.log('📊 Response ok:', response.ok);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML = `
+                        <h2 style="color: green;">✅ LOGIN SUCCESSFUL!</h2>
+                        <p>Token received: ${data.token ? 'Yes' : 'No'}</p>
+                        <p>User: ${data.user ? data.user.email : 'No'}</p>
+                    `;
+                } else {
+                    const data = await response.json();
+                    resultDiv.innerHTML = `
+                        <h2 style="color: red;">❌ LOGIN FAILED</h2>
+                        <p>Status: ${response.status}</p>
+                        <p>Error: ${data.message || 'Unknown error'}</p>
+                    `;
+                }
+                
+            } catch (error) {
+                console.error('❌ Network error:', error);
+                resultDiv.innerHTML = `
+                    <h2 style="color: red;">❌ NETWORK ERROR</h2>
+                    <p>This indicates CORS blocking!</p>
+                    <p>Error: ${error.message}</p>
+                    <p>The browser blocked this request due to CORS policy.</p>
+                `;
+            }
+        }
+        
+        // Test immediately when page loads
+        testCORSLogin();
+    </script>
+</body>
+</html>

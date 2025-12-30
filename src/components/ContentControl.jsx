@@ -40,19 +40,19 @@ function ContentControl() {
   };
 
   const fetchMedia = async () => {
-    // Assuming there's an endpoint to get media for approval
-    // For now, placeholder - might need to add endpoint if not exists
+    // Fetch pending media for approval
     try {
-      // This might not exist yet, but assuming we can fetch pending media
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/media/pending`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/pending`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
       if (res.ok) {
         setMedia(data.media || []);
+      } else {
+        setError(data.error || 'Failed to fetch pending media');
       }
     } catch (err) {
-      // Ignore if endpoint doesn't exist
+      setError('Failed to fetch pending media');
     } finally {
       setLoading(false);
     }
@@ -107,21 +107,30 @@ function ContentControl() {
     }
   };
 
-  const handleApproveRejectMedia = async (mediaId, isApproved) => {
+  const handleApproveRejectMedia = async (mediaId, isApproved, rejectionReason = '') => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/media/${mediaId}/approve`, {
-        method: 'PATCH',
+      const endpoint = isApproved 
+        ? `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${mediaId}/approve`
+        : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${mediaId}/reject`;
+      
+      const method = 'POST';
+      const body = isApproved ? {} : { reason: rejectionReason };
+      
+      const res = await fetch(endpoint, {
+        method,
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ is_approved: isApproved }),
+        body: JSON.stringify(body),
       });
       const data = await res.json();
       if (res.ok) {
         fetchMedia();
+        // Show success message
+        alert(data.message || `Media ${isApproved ? 'approved' : 'rejected'} successfully`);
       } else {
-        alert(data.error);
+        alert(data.error || `Failed to ${isApproved ? 'approve' : 'reject'} media`);
       }
     } catch (err) {
       alert('Failed to update media');
@@ -240,8 +249,21 @@ function ContentControl() {
                 <td>{item.uploader_email}</td>
                 <td>{new Date(item.uploaded_at).toLocaleString()}</td>
                 <td>
-                  <button onClick={() => handleApproveRejectMedia(item.media_id, true)}>Approve</button>
-                  <button onClick={() => handleApproveRejectMedia(item.media_id, false)}>Reject</button>
+                  <button 
+                    onClick={() => handleApproveRejectMedia(item.media_id, true)}
+                    className="approve-btn"
+                  >
+                    Approve
+                  </button>
+                  <button 
+                    onClick={() => {
+                      const reason = prompt('Please provide a reason for rejection (optional):');
+                      handleApproveRejectMedia(item.media_id, false, reason);
+                    }}
+                    className="reject-btn"
+                  >
+                    Reject
+                  </button>
                 </td>
               </tr>
             ))}

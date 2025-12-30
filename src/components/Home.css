@@ -183,42 +183,237 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  max-width: 600px;
+  max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
 
-.welcome {
+.dashboard-welcome {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
   color: var(--primary-color);
 }
 
-.button-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 10px;
-  margin-top: 20px;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.dashboard-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #2d3748;
 }
 
-.dashboard-button {
-  padding: 15px;
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+.dashboard-subtitle {
   font-size: 16px;
-  transition: background-color 0.3s;
+  color: #718096;
+  font-weight: 400;
 }
 
-.dashboard-button:hover {
-  background-color: #009b73;
+.navigation-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 500px;
+}
+
+.nav-button {
+  border: none;
+  border-radius: 16px;
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  position: relative;
+  overflow: hidden;
+  text-align: left;
+  width: 100%;
+}
+
+.nav-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: left 0.5s;
+}
+
+.nav-button:hover::before {
+  left: 100%;
+}
+
+.nav-button:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.nav-button:focus {
+  outline: none;
+  ring: 2px;
+  ring-color: var(--primary-color);
+  ring-opacity: 0.5;
+}
+
+.nav-button:active {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Primary button - Airtime & Data */
+.nav-button-primary {
+  background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
+  color: white;
+}
+
+.nav-button-primary:hover {
+  background: linear-gradient(135deg, #00a085 0%, #009b73 100%);
+}
+
+.nav-button-primary .nav-button-icon {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+/* Secondary button - Video & Music */
+.nav-button-secondary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.nav-button-secondary:hover {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6b42a3 100%);
+}
+
+.nav-button-secondary .nav-button-icon {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+/* Tertiary button - Tickets */
+.nav-button-tertiary {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+}
+
+.nav-button-tertiary:hover {
+  background: linear-gradient(135deg, #ee82ee 0%, #f5475c 100%);
+}
+
+.nav-button-tertiary .nav-button-icon {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.nav-button-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-button-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.nav-button-text {
+  flex: 1;
+}
+
+.nav-button-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  line-height: 1.2;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.nav-button-description {
+  font-size: 14px;
+  margin: 0;
+  opacity: 1;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 500;
+}
+
+.nav-button-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.nav-button:hover .nav-button-arrow {
+  transform: translateX(4px);
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+  .dashboard {
+    padding: 16px;
+  }
+  
+  .dashboard-title {
+    font-size: 24px;
+  }
+  
+  .navigation-buttons {
+    gap: 20px;
+  }
+  
+  .nav-button {
+    padding: 20px;
+  }
+  
+  .nav-button-content {
+    gap: 16px;
+  }
+  
+  .nav-button-icon {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .nav-button-title {
+    font-size: 18px;
+  }
+  
+  .nav-button-description {
+    font-size: 13px;
+  }
+  
+  .nav-button-arrow {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-button-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+  
+  .nav-button-arrow {
+    align-self: center;
+  }
+  
+  .nav-button:hover .nav-button-arrow {
+    transform: translateY(-2px);
+  }
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { buildApiUrl, authenticatedFetch } from '../utils/api';
 import './Login.css';
 
 function Login() {
@@ -16,7 +17,7 @@ function Login() {
       return;
     }
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/login`, {
+      const res = await fetch(buildApiUrl('login'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone, password }),

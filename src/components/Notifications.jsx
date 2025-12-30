@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, X, Settings, Check, CheckCheck, Trash2 } from 'lucide-react';
+import { Bell, X, Settings, Check, CheckCheck, Trash2, ThumbsUp, Heart, MessageCircle, Reply, Download } from 'lucide-react';
 import './Notifications.css';
 
 const Notifications = ({ user, onNotificationClick }) => {
@@ -171,14 +171,16 @@ const Notifications = ({ user, onNotificationClick }) => {
     return `${Math.floor(diffInSeconds / 86400)}d ago`;
   };
 
-  const getNotificationIcon = (type) => {
+  const getNotificationIcon = (type, isRead = false) => {
+    const iconClass = `notification-icon-svg ${!isRead ? 'active' : ''}`;
+    
     switch (type) {
-      case 'LIKE': return '👍';
-      case 'FAVORITE': return '❤️';
-      case 'COMMENT': return '💬';
-      case 'REPLY': return '↩️';
-      case 'DOWNLOAD': return '⬇️';
-      default: return '🔔';
+      case 'LIKE': return <ThumbsUp size={18} className={iconClass} />;
+      case 'FAVORITE': return <Heart size={18} className={iconClass} />;
+      case 'COMMENT': return <MessageCircle size={18} className={iconClass} />;
+      case 'REPLY': return <Reply size={18} className={iconClass} />;
+      case 'DOWNLOAD': return <Download size={18} className={iconClass} />;
+      default: return <Bell size={18} className={iconClass} />;
     }
   };
 
@@ -247,7 +249,7 @@ const Notifications = ({ user, onNotificationClick }) => {
                 >
                   <div className="notification-content">
                     <div className="notification-icon">
-                      {getNotificationIcon(notification.action_type)}
+                      {getNotificationIcon(notification.action_type, notification.is_read)}
                     </div>
                     <div className="notification-text">
                       <p className="notification-message">{notification.message}</p>

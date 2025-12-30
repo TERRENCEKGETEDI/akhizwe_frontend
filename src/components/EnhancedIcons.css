@@ -1,0 +1,483 @@
+/* Enhanced Icons CSS - Hollow to Filled Animation Styles */
+
+/* Base enhanced icon styles */
+.enhanced-icon {
+  transition: all var(--animation-duration, 0.3s) cubic-bezier(0.4, 0, 0.2, 1);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  cursor: pointer;
+  user-select: none;
+}
+
+.enhanced-icon:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+}
+
+.enhanced-icon.active {
+  transform: scale(1.05);
+}
+
+/* Heart Icon Animation */
+.heart-icon .heart-path {
+  fill: transparent;
+  stroke: currentColor;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+}
+
+.heart-icon.active .heart-path {
+  fill: var(--fill-color);
+  stroke: var(--stroke-color);
+  animation: heartBeat 0.6s ease-in-out;
+}
+
+@keyframes heartBeat {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.2); }
+  50% { transform: scale(1.1); }
+  75% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+/* Star Icon Animation (Orange for favorites) */
+.star-icon .star-path {
+  fill: transparent;
+  stroke: currentColor;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+}
+
+.star-icon.active .star-path {
+  fill: var(--fill-color);
+  stroke: var(--stroke-color);
+  animation: starTwinkle 0.8s ease-in-out;
+}
+
+@keyframes starTwinkle {
+  0% { 
+    transform: scale(1) rotate(0deg);
+    filter: brightness(1);
+  }
+  50% { 
+    transform: scale(1.3) rotate(180deg);
+    filter: brightness(1.3) drop-shadow(0 0 8px var(--fill-color));
+  }
+  100% { 
+    transform: scale(1.1) rotate(360deg);
+    filter: brightness(1.1);
+  }
+}
+
+/* Comment Icon Animation */
+.comment-icon .comment-path {
+  fill: transparent;
+  stroke: currentColor;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+}
+
+.comment-icon.active .comment-path {
+  fill: var(--fill-color);
+  stroke: var(--stroke-color);
+  animation: commentPulse 0.5s ease-in-out;
+}
+
+@keyframes commentPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1.05); }
+}
+
+/* Share Icon Animation */
+.share-icon .share-path {
+  fill: transparent;
+  stroke: currentColor;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+}
+
+.share-icon.active .share-path {
+  fill: var(--fill-color);
+  stroke: var(--stroke-color);
+  animation: shareBounce 0.6s ease-in-out;
+}
+
+@keyframes shareBounce {
+  0% { transform: translateY(0); }
+  25% { transform: translateY(-3px); }
+  50% { transform: translateY(0); }
+  75% { transform: translateY(-1px); }
+  100% { transform: translateY(0); }
+}
+
+/* Volume Icons Animation */
+.volume-up-icon .volume-up-path,
+.volume-mute-icon .volume-mute-path {
+  fill: transparent;
+  stroke: currentColor;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+}
+
+.volume-up-icon.active .volume-up-path,
+.volume-mute-icon.active .volume-mute-path {
+  fill: var(--fill-color);
+  stroke: var(--stroke-color);
+  animation: volumeWave 0.7s ease-in-out;
+}
+
+@keyframes volumeWave {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.1) translateX(-1px); }
+  50% { transform: scale(1.2) translateX(1px); }
+  75% { transform: scale(1.1) translateX(-0.5px); }
+  100% { transform: scale(1) translateX(0); }
+}
+
+/* Play/Pause Icons Animation */
+.play-icon .play-path,
+.pause-icon .pause-path {
+  fill: transparent;
+  stroke: currentColor;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+}
+
+.play-icon.active .play-path,
+.pause-icon.active .pause-path {
+  fill: var(--fill-color);
+  stroke: var(--stroke-color);
+  animation: mediaControl 0.5s ease-in-out;
+}
+
+@keyframes mediaControl {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.25); }
+  100% { transform: scale(1.1); }
+}
+
+/* Arrow Icons Animation */
+.arrow-up-icon .arrow-up-path,
+.arrow-down-icon .arrow-down-path {
+  fill: transparent;
+  stroke: currentColor;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+}
+
+.arrow-up-icon.active .arrow-up-path,
+.arrow-down-icon.active .arrow-down-path {
+  fill: var(--fill-color);
+  stroke: var(--stroke-color);
+  animation: arrowSlide 0.4s ease-in-out;
+}
+
+@keyframes arrowSlide {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+  100% { transform: translateY(-1px); }
+}
+
+/* Music Note Icon Animation */
+.music-note-icon .music-note-path {
+  fill: transparent;
+  stroke: currentColor;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+}
+
+.music-note-icon.active .music-note-path {
+  fill: var(--fill-color);
+  stroke: var(--stroke-color);
+  animation: musicNoteFloat 0.8s ease-in-out;
+}
+
+@keyframes musicNoteFloat {
+  0% { 
+    transform: translateY(0) rotate(0deg);
+    filter: brightness(1);
+  }
+  25% { 
+    transform: translateY(-4px) rotate(-5deg);
+    filter: brightness(1.2);
+  }
+  50% { 
+    transform: translateY(-2px) rotate(5deg);
+    filter: brightness(1.4);
+  }
+  75% { 
+    transform: translateY(-3px) rotate(-2deg);
+    filter: brightness(1.2);
+  }
+  100% { 
+    transform: translateY(0) rotate(0deg);
+    filter: brightness(1);
+  }
+}
+
+/* Close Icon Animation */
+.close-icon .close-path {
+  fill: transparent;
+  stroke: currentColor;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+}
+
+.close-icon.active .close-path {
+  fill: var(--fill-color);
+  stroke: var(--stroke-color);
+  animation: closeSpin 0.4s ease-in-out;
+}
+
+@keyframes closeSpin {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+/* Thumbs Up Icon Animation */
+.thumbs-up-icon .thumbs-up-path {
+  fill: transparent;
+  stroke: currentColor;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+}
+
+.thumbs-up-icon.active .thumbs-up-path {
+  fill: var(--fill-color);
+  stroke: var(--stroke-color);
+  animation: thumbsUpPop 0.5s ease-in-out;
+}
+
+@keyframes thumbsUpPop {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.2) translateY(-2px); }
+  75% { transform: scale(1.1) translateY(-1px); }
+  100% { transform: scale(1.05) translateY(0); }
+}
+
+/* Reply Icon Animation */
+.reply-icon .reply-path {
+  fill: transparent;
+  stroke: currentColor;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 0.2, 1);
+  transform-origin: center;
+}
+
+.reply-icon.active .reply-path {
+  fill: var(--fill-color);
+  stroke: var(--stroke-color);
+  animation: replyCurve 0.6s ease-in-out;
+}
+
+@keyframes replyCurve {
+  0% { 
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% { 
+    transform: scale(1.15);
+    filter: brightness(1.2);
+  }
+  100% { 
+    transform: scale(1.08);
+    filter: brightness(1.1);
+  }
+}
+
+/* User Icon Animation */
+.user-icon .user-path {
+  fill: transparent;
+  stroke: currentColor;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+}
+
+.user-icon.active .user-path {
+  fill: var(--fill-color);
+  stroke: var(--stroke-color);
+  animation: userGlow 0.6s ease-in-out;
+}
+
+@keyframes userGlow {
+  0% { 
+    transform: scale(1);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  }
+  50% { 
+    transform: scale(1.1);
+    filter: drop-shadow(0 4px 12px var(--fill-color)) brightness(1.2);
+  }
+  100% { 
+    transform: scale(1.05);
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4)) brightness(1.1);
+  }
+}
+
+/* Spinner Animation */
+.spinner-icon .spinner-path {
+  fill: transparent;
+  stroke: currentColor;
+  animation: spinnerRotate 2s linear infinite;
+  transform-origin: center;
+}
+
+@keyframes spinnerRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Enhanced interaction button styles */
+.enhanced-icon-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.enhanced-icon-container:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.enhanced-icon-container.active {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Media feed specific enhanced icon styles */
+.media-feed-enhanced-icons {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.media-feed-enhanced-icons .enhanced-icon-container {
+  width: 48px;
+  height: 48px;
+  padding: 10px;
+}
+
+.media-feed-enhanced-icons .enhanced-icon {
+  width: 28px;
+  height: 28px;
+}
+
+/* Comment section enhanced icons */
+.comment-section-enhanced-icons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.comment-section-enhanced-icons .enhanced-icon-container {
+  width: 36px;
+  height: 36px;
+  padding: 6px;
+}
+
+.comment-section-enhanced-icons .enhanced-icon {
+  width: 24px;
+  height: 24px;
+}
+
+/* Responsive design for enhanced icons */
+@media (max-width: 768px) {
+  .media-feed-enhanced-icons {
+    padding: 8px;
+    gap: 10px;
+  }
+  
+  .media-feed-enhanced-icons .enhanced-icon-container {
+    width: 40px;
+    height: 40px;
+    padding: 8px;
+  }
+  
+  .media-feed-enhanced-icons .enhanced-icon {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .comment-section-enhanced-icons .enhanced-icon-container {
+    width: 32px;
+    height: 32px;
+    padding: 4px;
+  }
+  
+  .comment-section-enhanced-icons .enhanced-icon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .media-feed-enhanced-icons {
+    padding: 6px;
+    gap: 8px;
+  }
+  
+  .media-feed-enhanced-icons .enhanced-icon-container {
+    width: 36px;
+    height: 36px;
+    padding: 6px;
+  }
+  
+  .media-feed-enhanced-icons .enhanced-icon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  .enhanced-icon,
+  .enhanced-icon * {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  .enhanced-icon:hover {
+    transform: none;
+  }
+  
+  .enhanced-icon.active {
+    transform: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .enhanced-icon {
+    filter: none;
+    stroke-width: 3;
+  }
+  
+  .enhanced-icon-container {
+    border-width: 2px;
+  }
+  
+  .enhanced-icon.active .enhanced-icon * {
+    stroke-width: 3;
+  }
+}

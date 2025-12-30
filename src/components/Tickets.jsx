@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './Dashboard.css';
 import './Tickets.css';
+import Header from './Header';
 import TopUpWallet from './TopUpWallet';
 import { formatDataBalance } from '../utils/format';
 
@@ -20,6 +21,13 @@ function decodeJWT(token) {
 }
 
 function Tickets() {
+  const [user, setUser] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('user'));
+    } catch {
+      return null;
+    }
+  });
   const [tickets, setTickets] = useState([]);
   const [userTickets, setUserTickets] = useState([]);
   const [upcomingEvents, setUpcomingEvents] = useState([]);
@@ -52,24 +60,19 @@ function Tickets() {
     loadTickets();
     loadUserTickets();
     loadUpcomingEvents();
+    loadBalance();
   }, []);
+
+  const handleProfileUpdate = (profileData) => {
+    // Update user data in localStorage and state
+    const updatedUser = { ...user, ...profileData };
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    setUser(updatedUser);
+  };
 
   useEffect(() => {
     loadTickets();
   }, [filters]);
-
-  useEffect(() => {
-    // Decode user info from token
-    const token = localStorage.getItem('token');
-    if (token) {
-      const decoded = decodeJWT(token);
-      if (decoded) {
-        setBalance(parseFloat(decoded.wallet_balance || 0));
-        setAirtimeBalance(parseFloat(decoded.airtime_balance || 0));
-        setDataBalance(parseFloat(decoded.data_balance || 0));
-      }
-    }
-  }, []);
 
   const loadTickets = async () => {
     try {
@@ -132,6 +135,25 @@ function Tickets() {
     }
   };
 
+  const loadBalance = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/airtime-data/balance`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setBalance(parseFloat(data.wallet_balance || 0));
+        setAirtimeBalance(parseFloat(data.airtime_balance || 0));
+        setDataBalance(parseFloat(data.data_balance || 0));
+      }
+    } catch (error) {
+      console.error('Error loading balance:', error);
+    }
+  };
+
 
   const handleFilterChange = (field, value) => {
     setFilters(prev => ({
@@ -168,6 +190,8 @@ function Tickets() {
           message: 'Purchase successful!',
           data
         });
+        const totalPrice = selectedTicket.price * purchaseData.quantity;
+        setBalance(balance - totalPrice);
         loadTickets();
         loadUserTickets();
         loadUpcomingEvents();
@@ -204,6 +228,7 @@ function Tickets() {
       if (response.ok) {
         const data = await response.json();
         alert(`Ticket cancelled successfully. Refund: R${data.refund_amount}`);
+        setBalance(balance + parseFloat(data.refund_amount));
         loadUserTickets();
         loadUpcomingEvents();
       } else {
@@ -268,17 +293,13 @@ function Tickets() {
   }
 
   return (
-    <div className="container">
+    <div>
+      <Header user={user} onProfileUpdate={handleProfileUpdate} />
+      <div className="container">
       <h2>Tickets Dashboard</h2>
       <div className="balance-display">
         <div className="balance-item">
           <strong>Wallet Balance: R{balance.toFixed(2)}</strong>
-        </div>
-        <div className="balance-item">
-          <strong>Airtime Balance: R{airtimeBalance.toFixed(2)}</strong>
-        </div>
-        <div className="balance-item">
-          <strong>Data Balance: {formatDataBalance(dataBalance)}</strong>
         </div>
       </div>
 
@@ -307,6 +328,12 @@ function Tickets() {
           onClick={() => setActiveTab('top-up')}
         >
           Top Up Wallet
+        </button>
+        <button
+          className={activeTab === 'history' ? 'tab-active' : 'tab'}
+          onClick={() => setActiveTab('history')}
+        >
+          History
         </button>
       </div>
 
@@ -444,25 +471,44 @@ function Tickets() {
 
       {activeTab === 'upcoming' && (
         <div className="ticket-section">
-          <h3>My Upcoming Events</h3>
-          <div className="events-list">
-            {upcomingEvents.map(event => (
-              <div key={event.ticket_id} className="event-item">
-                <div className="event-info">
-                  <h4>{event.title}</h4>
-                  <p><strong>Date:</strong> {formatDate(event.event_date)}</p>
-                  <p><strong>Location:</strong> {event.location}</p>
-                  <p><strong>Seat:</strong> {event.seat || 'Not assigned'}</p>
+          <h3>Upcoming Events</h3>
+          <div className="tickets-grid">
+            {tickets.filter(ticket => !userTickets.some(purchase => purchase.ticket_id === ticket.ticket_id)).map(ticket => (
+              <div key={ticket.ticket_id} className="ticket-card">
+                <div className="ticket-header">
+                  <h3>{ticket.title}</h3>
+                  {ticket.is_featured && <span className="featured-badge">Featured</span>}
                 </div>
 
-                <div className="event-qr">
-                  <p><strong>Your QR Code:</strong></p>
-                  {event.qr_code.startsWith('data:image') ? (
-                    <img src={event.qr_code} alt="QR Code" className="qr-image" />
-                  ) : (
-                    <div className="qr-display">{event.qr_code}</div>
+                <div className="ticket-details">
+                  <p><strong>Type:</strong> {ticket.ticket_type} {ticket.ticket_subtype && `(${ticket.ticket_subtype})`}</p>
+                  <p><strong>Date:</strong> {formatDate(ticket.event_date)}</p>
+                  {ticket.start_time && <p><strong>Start Time:</strong> {ticket.start_time}</p>}
+                  {ticket.end_time && <p><strong>End Time:</strong> {ticket.end_time}</p>}
+                  <p><strong>Location:</strong> {ticket.location}</p>
+                  <p><strong>Price:</strong> R{ticket.price}</p>
+                  {ticket.performers && ticket.performers.length > 0 && (
+                    <p><strong>Performers:</strong> {ticket.performers.join(', ')}</p>
                   )}
-                  <small>Show this at the venue</small>
+                  {ticket.teams && ticket.teams.length > 0 && (
+                    <p><strong>Teams:</strong> {ticket.teams.join(' vs ')}</p>
+                  )}
+                  {ticket.description && <p>{ticket.description}</p>}
+                  <p><strong>Available:</strong> {ticket.available_quantity}/{ticket.total_quantity}</p>
+                  {getStatusBadge(ticket.status_display || 'UPCOMING')}
+                </div>
+
+                <div className="ticket-actions">
+                  <button
+                    className="btn-primary"
+                    onClick={() => {
+                      setSelectedTicket(ticket);
+                      setShowPurchaseModal(true);
+                    }}
+                    disabled={ticket.available_quantity === 0}
+                  >
+                    {ticket.available_quantity === 0 ? 'Sold Out' : 'Buy Ticket'}
+                  </button>
                 </div>
               </div>
             ))}
@@ -584,6 +630,28 @@ function Tickets() {
           </div>
         </div>
       )}
+
+      {activeTab === 'history' && (
+        <div className="ticket-section">
+          <h3>Ticket Transaction History</h3>
+          <div className="tickets-list">
+            {userTickets.map(ticket => (
+              <div key={ticket.transaction_ref} className="ticket-item">
+                <div className="ticket-info">
+                  <h4>{ticket.title}</h4>
+                  <p><strong>Ticket ID:</strong> {ticket.ticket_id}</p>
+                  <p><strong>Purchase Date:</strong> {formatDate(ticket.purchase_date)}</p>
+                  <p><strong>Amount Paid:</strong> R{ticket.amount}</p>
+                  <p><strong>Event Date:</strong> {formatDate(ticket.event_date)}</p>
+                  <p><strong>Location:</strong> {ticket.location}</p>
+                  {getStatusBadge(ticket.status)}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      </div>
     </div>
   );
 }

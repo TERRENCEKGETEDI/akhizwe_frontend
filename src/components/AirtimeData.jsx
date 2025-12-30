@@ -27,7 +27,13 @@ function decodeJWT(token) {
 }
 
 function AirtimeData() {
-  const user = JSON.parse(localStorage.getItem('user'));
+  const [user, setUser] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('user'));
+    } catch {
+      return null;
+    }
+  });
   const [networks, setNetworks] = useState([]);
   const [bundles, setBundles] = useState([]);
   const [denominations] = useState([10, 20, 50, 100, 200, 500]);
@@ -61,6 +67,13 @@ function AirtimeData() {
     fetchNetworks();
     fetchUserBalance();
   }, []);
+
+  const handleProfileUpdate = (profileData) => {
+    // Update user data in localStorage and state
+    const updatedUser = { ...user, ...profileData };
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    setUser(updatedUser);
+  };
 
   useEffect(() => {
     if (activeTab === 'buy-airtime' || activeTab === 'buy-data') {
@@ -302,7 +315,7 @@ function AirtimeData() {
 
   return (
     <div>
-      <Header user={user} />
+      <Header user={user} onProfileUpdate={handleProfileUpdate} />
       <div className="container">
         <h2>Airtime & Data Dashboard</h2>
         <div className="balance-display">

@@ -8,12 +8,26 @@ import MediaApproval from './MediaApproval';
 import Header from './Header';
 
 function Admin() {
-  const user = JSON.parse(localStorage.getItem('user'));
-  if (user.role !== 'ADMIN' && user.role !== 'admin') {
+  const [user, setUser] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('user'));
+    } catch {
+      return null;
+    }
+  });
+  
+  if (!user || (user.role !== 'ADMIN' && user.role !== 'admin')) {
     return <div className="container"><h2>Access Denied</h2></div>;
   }
 
   const [activeTab, setActiveTab] = useState('account');
+
+  const handleProfileUpdate = (profileData) => {
+    // Update user data in localStorage and state
+    const updatedUser = { ...user, ...profileData };
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    setUser(updatedUser);
+  };
 
   const renderTab = () => {
     switch (activeTab) {
@@ -34,7 +48,7 @@ function Admin() {
 
   return (
     <div className="admin-dashboard">
-      <Header user={user} />
+      <Header user={user} onProfileUpdate={handleProfileUpdate} />
       <div className="admin-tabs">
         <button
           className={activeTab === 'account' ? 'active' : ''}
