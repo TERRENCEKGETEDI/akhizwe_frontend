@@ -25,7 +25,7 @@ function ContentControl() {
 
   const fetchTickets = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/tickets`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/tickets`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -42,7 +42,7 @@ function ContentControl() {
   const fetchMedia = async () => {
     // Fetch pending media for approval
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/pending`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/media/pending`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -61,7 +61,7 @@ function ContentControl() {
   const handleAddTicket = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/tickets`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/tickets`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ function ContentControl() {
   const handleDeleteTicket = async (ticketId) => {
     if (!confirm('Are you sure you want to delete this ticket?')) return;
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/tickets/${ticketId}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/tickets/${ticketId}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -110,8 +110,8 @@ function ContentControl() {
   const handleApproveRejectMedia = async (mediaId, isApproved, rejectionReason = '') => {
     try {
       const endpoint = isApproved 
-        ? `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${mediaId}/approve`
-        : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${mediaId}/reject`;
+        ? `${import.meta.env.VITE_API_URL}/api/media/${mediaId}/approve`
+        : `${import.meta.env.VITE_API_URL}/api/media/${mediaId}/reject`;
       
       const method = 'POST';
       const body = isApproved ? {} : { reason: rejectionReason };

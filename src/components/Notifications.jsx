@@ -22,7 +22,7 @@ const Notifications = ({ user, onNotificationClick }) => {
         try {
           console.log('🔌 Connecting to WebSocket...');
           const { io } = await import('socket.io-client');
-          const newSocket = io(import.meta.env.VITE_API_URL || 'http://localhost:5000', {
+          const newSocket = io(import.meta.env.VITE_API_URL, {
             auth: {
               token: token
             }
@@ -97,7 +97,7 @@ const Notifications = ({ user, onNotificationClick }) => {
       connectWebSocket();
 
       // Fallback: fetch notifications via API
-      fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/notifications`, {
+      fetch(`${import.meta.env.VITE_API_URL}/api/media/notifications`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -146,7 +146,7 @@ const Notifications = ({ user, onNotificationClick }) => {
   const deleteNotification = (notificationId) => {
     const token = localStorage.getItem('token');
     // API call to delete notification
-    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/notifications/${notificationId}`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/notifications/${notificationId}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,

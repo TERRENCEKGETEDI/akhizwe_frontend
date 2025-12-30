@@ -15,7 +15,7 @@ const MyMedia = ({ user, token, onMediaUpdate = () => {} }) => {
   // WebSocket connection for real-time updates
   useEffect(() => {
     if (token && user) {
-      const newSocket = io(import.meta.env.VITE_API_URL || 'http://localhost:5000', {
+      const newSocket = io(import.meta.env.VITE_API_URL, {
         auth: { token: token }
       });
 
@@ -57,7 +57,7 @@ const MyMedia = ({ user, token, onMediaUpdate = () => {} }) => {
     setError(null);
     
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/my`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/media/my`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -140,7 +140,7 @@ const MyMedia = ({ user, token, onMediaUpdate = () => {} }) => {
     }
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${mediaId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/media/${mediaId}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -178,7 +178,7 @@ const MyMedia = ({ user, token, onMediaUpdate = () => {} }) => {
       formData.append('reupload', 'true');
       formData.append('original_media_id', mediaItem.media_id);
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/reupload`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/media/reupload`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: formData

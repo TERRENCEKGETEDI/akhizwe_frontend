@@ -37,7 +37,7 @@ function VideoMusic({ mediaType = 'all' }) {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/search/suggestions?q=${encodeURIComponent(query)}&limit=8&media_type=${mediaType}`
+        `${import.meta.env.VITE_API_URL}/api/media/search/suggestions?q=${encodeURIComponent(query)}&limit=8&media_type=${mediaType}`
       );
       const data = await response.json();
       setSearchSuggestions(data.suggestions || []);
@@ -84,7 +84,7 @@ function VideoMusic({ mediaType = 'all' }) {
     if (!token) return;
     
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/notifications`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/media/notifications`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
@@ -99,7 +99,7 @@ function VideoMusic({ mediaType = 'all' }) {
     if (!token || userRole !== 'ADMIN') return;
     
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/analytics`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/media/analytics`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
@@ -114,7 +114,7 @@ function VideoMusic({ mediaType = 'all' }) {
     if (!token || userRole !== 'ADMIN') return;
     
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/pending`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/media/pending`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
@@ -129,7 +129,7 @@ function VideoMusic({ mediaType = 'all' }) {
     if (!token || userRole !== 'ADMIN') return;
     
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/reports`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/media/reports`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
@@ -225,7 +225,7 @@ function VideoMusic({ mediaType = 'all' }) {
     if (!token || userRole !== 'ADMIN') return;
     
     try {
-      await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${id}/approve`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/media/${id}/approve`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -240,7 +240,7 @@ function VideoMusic({ mediaType = 'all' }) {
     if (!token || userRole !== 'ADMIN') return;
     
     try {
-      await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${id}/reject`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/media/${id}/reject`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -255,7 +255,7 @@ function VideoMusic({ mediaType = 'all' }) {
     if (!token) return;
     
     try {
-      await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${id}/report`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/media/${id}/report`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ reason })

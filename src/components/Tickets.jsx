@@ -84,7 +84,7 @@ function Tickets() {
       if (filters.search) queryParams.append('search', filters.search);
       queryParams.append('upcoming_only', 'true');
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/tickets?${queryParams}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/tickets?${queryParams}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -103,7 +103,7 @@ function Tickets() {
 
   const loadUserTickets = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/tickets/history`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/tickets/history`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -120,7 +120,7 @@ function Tickets() {
 
   const loadUpcomingEvents = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/tickets/upcoming`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/tickets/upcoming`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -137,7 +137,7 @@ function Tickets() {
 
   const loadBalance = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/airtime-data/balance`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/airtime-data/balance`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -168,7 +168,7 @@ function Tickets() {
     setPurchaseStatus({ status: 'processing', message: 'Processing purchase...' });
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/tickets/buy`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/tickets/buy`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -218,7 +218,7 @@ function Tickets() {
     if (!confirm('Are you sure you want to cancel this ticket? Refund policy applies.')) return;
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/tickets/cancel/${transactionRef}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/tickets/cancel/${transactionRef}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`

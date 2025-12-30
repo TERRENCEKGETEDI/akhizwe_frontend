@@ -17,7 +17,7 @@ function ProfileSimple({ user, onClose, onProfileUpdate }) {
       setError('');
       
       const token = localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/profile`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/profile`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

@@ -47,7 +47,7 @@ const MediaFeed = ({
   const fetchMedia = async () => {
     try {
       const query = new URLSearchParams({ ...filters, media_type: mediaType });
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media?${query}`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/media?${query}`);
       const data = await res.json();
       setMedia(data.media || []);
     } catch (error) {
@@ -57,7 +57,7 @@ const MediaFeed = ({
 
   const fetchComments = async (id) => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${id}/comments`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/media/${id}/comments`);
       if (!res.ok) {
         throw new Error(`Failed to fetch comments: ${res.status}`);
       }
@@ -73,7 +73,7 @@ const MediaFeed = ({
     if (!token || !userEmail) return;
     
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/liked`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/media/liked`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -101,7 +101,7 @@ const MediaFeed = ({
     if (!token || !userEmail) return;
     
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/favorites`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/media/favorites`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -128,7 +128,7 @@ const MediaFeed = ({
   // Setup WebSocket connection
   useEffect(() => {
     if (token && user) {
-      const newSocket = io(import.meta.env.VITE_API_URL || 'http://localhost:5000', {
+      const newSocket = io(import.meta.env.VITE_API_URL, {
         auth: { token: token }
       });
 
@@ -256,7 +256,7 @@ const MediaFeed = ({
 
     try {
       const method = isCurrentlyLiked ? 'DELETE' : 'POST';
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${id}/like`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/media/${id}/like`, {
         method,
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -285,7 +285,7 @@ const MediaFeed = ({
 
     try {
       const method = isCurrentlyFavorited ? 'DELETE' : 'POST';
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${id}/favorite`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/media/${id}/favorite`, {
         method,
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -311,7 +311,7 @@ const MediaFeed = ({
 
     setIsSubmittingComment(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${id}/comment`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/media/${id}/comment`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ comment_text: text.trim() })
@@ -339,7 +339,7 @@ const MediaFeed = ({
     }
     
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${mediaId}/comment/${commentId}/reply`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/media/${mediaId}/comment/${commentId}/reply`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ reply_text: text.trim() })
@@ -365,7 +365,7 @@ const MediaFeed = ({
     }
     
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/comment/${commentId}/like`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/media/comment/${commentId}/like`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
       });

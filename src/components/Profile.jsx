@@ -52,7 +52,7 @@ function Profile({ user, onClose, onProfileUpdate }) {
       const token = localStorage.getItem('token');
       console.log('Profile: Token available:', !!token);
       
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/profile`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/profile`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -106,7 +106,7 @@ function Profile({ user, onClose, onProfileUpdate }) {
       const token = localStorage.getItem('token');
       const updateData = { [field]: formData[field] };
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/profile`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/profile`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -169,7 +169,7 @@ function Profile({ user, onClose, onProfileUpdate }) {
           const base64 = e.target.result;
           
           const token = localStorage.getItem('token');
-          const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/profile/picture`, {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/api/profile/picture`, {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${token}`,

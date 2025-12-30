@@ -133,7 +133,7 @@ const UploadForm = ({ user, token, onUploadSuccess = () => {} }) => {
       formData.append('creator_email', user?.email || '');
 
       // Make upload request
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/upload`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/media/upload`, {
         method: 'POST',
         headers: { 
           Authorization: `Bearer ${token}` 

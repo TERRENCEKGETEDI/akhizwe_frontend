@@ -19,7 +19,7 @@ function MediaApproval() {
   const fetchPendingMedia = async () => {
     try {
       const token = localStorage.getItem('token');
-      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const baseUrl = import.meta.env.VITE_API_URL;
       
       // Try the new validation endpoint first
       let response = await fetch(`${baseUrl}/api/media/pending/validate`, {
@@ -76,7 +76,7 @@ function MediaApproval() {
   const handleApprove = async (mediaId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${mediaId}/approve`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/media/${mediaId}/approve`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -103,7 +103,7 @@ function MediaApproval() {
       const token = localStorage.getItem('token');
       const rejectionReason = prompt('Please provide a reason for rejection (optional):');
       
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/media/${mediaId}/reject`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/media/${mediaId}/reject`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

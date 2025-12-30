@@ -20,7 +20,7 @@ function AccountManagement() {
   const fetchUsers = async () => {
     try {
       const query = new URLSearchParams({ ...filters, page: pagination.page, limit: pagination.limit });
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/users?${query}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/users?${query}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -39,7 +39,7 @@ function AccountManagement() {
 
   const fetchReports = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/reports`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/reports`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -53,7 +53,7 @@ function AccountManagement() {
 
   const handleBlockUnblock = async (email, isBlocked) => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/users/${email}/block`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/users/${email}/block`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -75,7 +75,7 @@ function AccountManagement() {
   const handleDelete = async (email) => {
     if (!confirm('Are you sure you want to delete this user?')) return;
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/users/${email}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/users/${email}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -92,7 +92,7 @@ function AccountManagement() {
 
   const handleReportStatus = async (reportId, status) => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/reports/${reportId}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/reports/${reportId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

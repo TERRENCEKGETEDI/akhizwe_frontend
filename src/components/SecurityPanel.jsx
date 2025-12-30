@@ -25,7 +25,7 @@ function SecurityPanel() {
   const fetchLogs = async () => {
     try {
       const query = new URLSearchParams(logFilters);
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/logs?${query}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/logs?${query}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -41,7 +41,7 @@ function SecurityPanel() {
 
   const fetchFailedTransactions = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/transactions/failed`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/transactions/failed`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -55,7 +55,7 @@ function SecurityPanel() {
 
   const fetchFraudAlerts = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/fraud-alerts`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/fraud-alerts`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -71,7 +71,7 @@ function SecurityPanel() {
 
   const handleToggleService = async (serviceName, enabled) => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/services/${serviceName}/toggle`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/services/${serviceName}/toggle`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ function SecurityPanel() {
 
   const handleBackup = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/backup`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/backup`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
       });
